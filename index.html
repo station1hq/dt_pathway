@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design Technology Pathway</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body,#root{width:100%;height:100%;overflow:hidden}
+body{background:#0B0F1A;font-family:'Outfit',sans-serif}
+button{font-family:inherit;outline:none}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideIn{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}}
+@keyframes pulseGlow{0%,100%{opacity:.6}50%{opacity:1}}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script>
+(function(){var n=function(){};console.log=n;console.warn=n;console.error=n;console.info=n;console.debug=n})();
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useRef, useEffect } = React;
+
+/* ───────── DATA ───────── */
+
+const FIELDS = [
+  { id: "product", label: "Product Design", color: "#E85D75" },
+  { id: "engineering", label: "Engineering", color: "#F59E0B" },
+  { id: "ux", label: "UX / Human Factors", color: "#8B5CF6" },
+  { id: "business", label: "Business & Enterprise", color: "#10B981" },
+  { id: "enviro", label: "Environmental Sci.", color: "#06B6D4" },
+  { id: "cs", label: "CS & Digital", color: "#3B82F6" },
+  { id: "architecture", label: "Architecture", color: "#F97316" },
+];
+
+const TOPICS = [
+  { code:"A1.1",name:"Ergonomics",col:"A",row:1,hl:false,fields:["product","ux","architecture","engineering"] },
+  { code:"B1.1",name:"User-centred design",col:"B",row:1,hl:false,fields:["product","ux","business"] },
+  { code:"C1.1",name:"Responsibility of the designer",col:"C",row:1,hl:false,fields:["product","business","enviro"] },
+  { code:"C1.2",name:"Inclusive design",col:"C",row:1,hl:false,fields:["product","ux","architecture"] },
+  { code:"C1.3",name:"Beyond usability",col:"C",row:1,hl:true,fields:["ux","product","business"] },
+  { code:"A2.1",name:"User-centred research methods",col:"A",row:2,hl:false,fields:["ux","product","business"] },
+  { code:"A2.2",name:"Prototyping techniques",col:"A",row:2,hl:false,fields:["product","engineering","cs","architecture"] },
+  { code:"B2.1",name:"The design process",col:"B",row:2,hl:false,fields:["product","ux","business","engineering"] },
+  { code:"B2.2",name:"Modelling & prototyping",col:"B",row:2,hl:false,fields:["product","engineering","cs","architecture"] },
+  { code:"C2.1",name:"Design for sustainability",col:"C",row:2,hl:false,fields:["enviro","product","business","architecture"] },
+  { code:"C2.2",name:"Design for circular economy",col:"C",row:2,hl:false,fields:["enviro","business","engineering","product"] },
+  { code:"A3.1",name:"Material classification & properties",col:"A",row:3,hl:false,fields:["engineering","product","architecture","enviro"] },
+  { code:"A3.2",name:"Structural systems",col:"A",row:3,hl:true,fields:["engineering","architecture"] },
+  { code:"A3.3",name:"Mechanical systems",col:"A",row:3,hl:true,fields:["engineering","product"] },
+  { code:"A3.4",name:"Electronic systems",col:"A",row:3,hl:true,fields:["engineering","cs","product"] },
+  { code:"B3.1",name:"Material selection",col:"B",row:3,hl:false,fields:["product","engineering","architecture","enviro"] },
+  { code:"B3.2",name:"Structural systems application",col:"B",row:3,hl:true,fields:["engineering","architecture"] },
+  { code:"B3.3",name:"Mechanical systems application",col:"B",row:3,hl:true,fields:["engineering","product"] },
+  { code:"B3.4",name:"Electronic systems application",col:"B",row:3,hl:true,fields:["engineering","cs","product"] },
+  { code:"C3.1",name:"Product analysis & evaluation",col:"C",row:3,hl:false,fields:["product","business","ux","engineering"] },
+  { code:"C3.2",name:"Life-cycle analysis",col:"C",row:3,hl:true,fields:["enviro","engineering","business"] },
+  { code:"A4.1",name:"Manufacturing techniques",col:"A",row:4,hl:true,fields:["engineering","business","architecture"] },
+  { code:"B4.1",name:"Production systems",col:"B",row:4,hl:true,fields:["business","engineering"] },
+  { code:"C4.1",name:"Design for manufacture strategies",col:"C",row:4,hl:true,fields:["business","engineering","enviro","product"] },
+];
+
+const COURSES = {
+  design:{ id:"design",label:"Design",level:"entry",color:"#8B5CF6",
+    desc:"The design pathway develops creative problem-solvers who combine artistic vision with technical skill. Students explore how design thinking applies across digital media, physical products, and computational systems.",
+    skills:["Design thinking","Visual communication","Creative problem-solving","Iterative prototyping","User empathy"],
+    careers:["Product designer","UX/UI designer","Architect","Industrial designer","Creative director","Design engineer"]},
+  digmedia:{ id:"digmedia",label:"Digital Media &\nMixed Media",level:"myp",color:"#3B82F6",grade:"MYP 4–5 · Grades 9–10",
+    desc:"Students explore digital and traditional media through photography, video, graphic design, animation, and mixed-media art. Emphasis on visual storytelling, digital tools, and developing a personal creative voice.",
+    skills:["Adobe Creative Suite","Photography & videography","Graphic design","Animation & motion","Visual storytelling","Mixed-media techniques"],
+    careers:["Graphic designer","Film & video editor","Animator","Photographer","Art director","Media producer"]},
+  proddesign:{ id:"proddesign",label:"Product\nDesign",level:"myp",color:"#10B981",grade:"MYP 4–5 · Grades 9–10",
+    desc:"Students learn to design and build physical products through the MYP design cycle. Hands-on work with materials, prototyping, CAD modelling, and user-centred research prepares students for IB Design Technology.",
+    skills:["CAD modelling","Prototyping & fabrication","Material exploration","User-centred research","Design cycle methodology","Technical drawing"],
+    careers:["Product designer","Industrial designer","Design engineer","Entrepreneur","Manufacturing engineer","Furniture designer"]},
+  csrobotics:{ id:"csrobotics",label:"Computer Science\n& Robotics",level:"myp",color:"#F59E0B",grade:"MYP 4–5 · Grades 9–10",
+    desc:"Students develop computational thinking through programming, robotics, and electronics. Projects combine hardware and software to solve real-world problems, building a foundation for IB Design Technology and CS.",
+    skills:["Programming (Python, JS)","Robotics & electronics","Computational thinking","Algorithmic problem-solving","Microcontrollers & sensors","Data & logic"],
+    careers:["Software engineer","Robotics engineer","Data scientist","IoT developer","Game developer","Systems architect"]},
+  ibart:{ id:"ibart",label:"IB Art\nSL / HL",level:"ib",color:"#E85D75",grade:"IB DP · Grades 11–12",
+    desc:"The IB Visual Arts course encourages students to explore diverse media, techniques, and art forms through studio work, curatorial practice, and critical analysis. Students develop a personal body of work and a comparative study.",
+    skills:["Studio practice","Curatorial exhibition","Comparative study","Art criticism & analysis","Portfolio development","Experimental media"],
+    careers:["Fine artist","Gallery curator","Art director","Illustrator","Set designer","Art therapist"]},
+  ibdt:{ id:"ibdt",label:"IB Design Technology\nSL / HL",level:"ib",color:"#06B6D4",grade:"IB DP · Grades 11–12",
+    desc:"IB Design Technology is an applied science combining design thinking with engineering. Students study materials, systems, sustainability, and user-centred design, culminating in a major design project.",
+    skills:["Design process & thinking","Materials & manufacturing","Structural & mechanical systems","Electronics & CAD","Sustainability & LCA","User-centred design research"],
+    careers:["Product designer","Design engineer","UX researcher","Architect","Sustainability consultant","Entrepreneur"]},
+};
+
+const CONNECTIONS = [
+  {from:"design",to:"digmedia"},{from:"design",to:"proddesign"},{from:"design",to:"csrobotics"},
+  {from:"digmedia",to:"ibart"},{from:"digmedia",to:"ibdt"},
+  {from:"proddesign",to:"ibart"},{from:"proddesign",to:"ibdt"},
+  {from:"csrobotics",to:"ibdt"},
+];
+
+const ROW_LABELS = {1:"People",2:"Process",3:"Product",4:"Production"};
+const COL_LABELS = {A:"Design in Theory",B:"Design in Practice",C:"Design in Context"};
+
+/* ───────── MATRIX COMPONENTS ───────── */
+
+function Dot({fieldId,active,dimmed}){
+  const f=FIELDS.find(x=>x.id===fieldId);
+  return <span style={{display:"inline-block",width:10,height:10,borderRadius:"50%",
+    backgroundColor:f.color,opacity:dimmed?.12:1,transition:"all .3s cubic-bezier(.4,0,.2,1)",
+    transform:active?"scale(1.5)":"scale(1)",boxShadow:active?`0 0 8px ${f.color}99`:"none",
+    margin:"0 1.5px"}} title={f.label}/>;
+}
+
+function TopicCard({topic,activeField}){
+  const rel=!activeField||topic.fields.includes(activeField);
+  const lit=activeField&&topic.fields.includes(activeField);
+  const ac=activeField?FIELDS.find(f=>f.id===activeField).color:null;
+  return <div style={{background:lit?`linear-gradient(135deg,${ac}16,${ac}08)`:"rgba(255,255,255,0.025)",
+    border:lit?`1.5px solid ${ac}50`:"1px solid rgba(255,255,255,0.055)",borderRadius:8,padding:"7px 10px",
+    transition:"all .3s cubic-bezier(.4,0,.2,1)",opacity:rel?1:.08,display:"flex",alignItems:"center",gap:8}}>
+    <div style={{flex:1,minWidth:0}}>
+      <div style={{display:"flex",alignItems:"center",gap:5}}>
+        <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,
+          color:lit?`${ac}bb`:"rgba(255,255,255,0.32)",letterSpacing:".05em",fontWeight:500,transition:"all .3s"}}>{topic.code}</span>
+        {topic.hl&&<span style={{fontSize:7.5,background:"rgba(248,113,113,0.18)",color:"#F87171",
+          padding:"1px 4px",borderRadius:3,fontWeight:700,fontFamily:"'JetBrains Mono',monospace",lineHeight:"13px"}}>HL</span>}
+      </div>
+      <div style={{fontSize:13.5,fontWeight:550,color:lit?"rgba(255,255,255,0.95)":"rgba(255,255,255,0.82)",
+        lineHeight:1.25,marginTop:2,transition:"all .3s"}}>{topic.name}</div>
+    </div>
+    <div style={{display:"flex",gap:2,flexShrink:0,alignItems:"center"}}>
+      {topic.fields.map(fId=><Dot key={fId} fieldId={fId} active={activeField===fId} dimmed={activeField&&activeField!==fId}/>)}
+    </div>
+  </div>;
+}
+
+function WeightBar({percent,color}){
+  return <div style={{display:"flex",alignItems:"center",gap:6}}>
+    <div style={{flex:1,height:6,borderRadius:3,background:"rgba(255,255,255,0.04)",overflow:"hidden"}}>
+      <div style={{width:`${percent}%`,height:"100%",borderRadius:3,background:`linear-gradient(90deg,${color},${color}aa)`}}/>
+    </div>
+    <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,fontWeight:600,color,minWidth:30,textAlign:"right"}}>{percent}%</span>
+  </div>;
+}
+
+function AssessmentCard({title,subtitle,duration,marks,weight,color,children}){
+  return <div style={{background:"rgba(255,255,255,0.02)",border:"1px solid rgba(255,255,255,0.055)",
+    borderRadius:8,padding:"9px 11px",display:"flex",flexDirection:"column",gap:5}}>
+    <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between"}}>
+      <div>
+        <div style={{fontSize:13,fontWeight:650,color:"rgba(255,255,255,0.85)",lineHeight:1.2}}>{title}</div>
+        {subtitle&&<div style={{fontSize:10.5,color:"rgba(255,255,255,0.38)",marginTop:1,lineHeight:1.3}}>{subtitle}</div>}
+      </div>
+      <span style={{fontSize:9,fontFamily:"'JetBrains Mono',monospace",fontWeight:600,
+        color,background:`${color}15`,padding:"2px 6px",borderRadius:4,lineHeight:"15px",flexShrink:0,marginLeft:6}}>{weight}</span>
+    </div>
+    <div style={{display:"flex",gap:8,fontSize:10,color:"rgba(255,255,255,0.3)"}}>
+      {duration&&<span>{duration}</span>}{marks&&<span>{marks} marks</span>}
+    </div>
+    {children}
+  </div>;
+}
+
+/* ───────── MATRIX VIEW ───────── */
+
+function MatrixView({onBack}){
+  const [activeField,setActiveField]=useState(null);
+  const [level,setLevel]=useState("sl");
+  const getTopics=(col,row)=>TOPICS.filter(t=>t.col===col&&t.row===row);
+  const activeCount=activeField?TOPICS.filter(t=>t.fields.includes(activeField)).length:TOPICS.length;
+  const slC="#60A5FA",hlC="#F87171",iaC="#A78BFA",cspC="#34D399";
+
+  return <div style={{width:"100%",height:"100%",display:"flex",flexDirection:"column",overflow:"hidden",animation:"fadeIn .4s ease"}}>
+    <div style={{padding:"10px 24px 9px",display:"flex",alignItems:"center",justifyContent:"space-between",
+      borderBottom:"1px solid rgba(255,255,255,0.06)",flexShrink:0}}>
+      <div style={{display:"flex",alignItems:"center",gap:12}}>
+        <button onClick={onBack} style={{display:"flex",alignItems:"center",gap:6,padding:"5px 12px",borderRadius:8,
+          border:"1px solid rgba(255,255,255,0.1)",background:"rgba(255,255,255,0.03)",cursor:"pointer",
+          color:"rgba(255,255,255,0.5)",fontSize:12,fontWeight:500,transition:"all .2s"}}>
+          <span style={{fontSize:16,lineHeight:1}}>←</span> Pathway</button>
+        <h1 style={{fontSize:22,fontWeight:800,color:"#fff",letterSpacing:"-0.02em"}}>IB Design Technology</h1>
+        <span style={{fontSize:14,fontWeight:300,color:"rgba(255,255,255,0.3)"}}>Syllabus Matrix</span>
+        <span style={{fontSize:9,fontWeight:600,letterSpacing:".12em",color:"rgba(255,255,255,0.18)",
+          textTransform:"uppercase",fontFamily:"'JetBrains Mono',monospace"}}>First Assessment 2027</span>
+      </div>
+      <div style={{display:"flex",alignItems:"center",gap:14,fontSize:11,color:"rgba(255,255,255,0.28)"}}>
+        <span><b style={{color:"rgba(255,255,255,0.55)"}}>SL</b> 150h</span>
+        <span><b style={{color:"rgba(255,255,255,0.55)"}}>HL</b> 240h</span>
+        <span style={{width:1,height:14,background:"rgba(255,255,255,0.08)"}}/>
+        {activeField
+          ?<span style={{fontSize:12}}><span style={{color:FIELDS.find(f=>f.id===activeField).color,fontWeight:700}}>{activeCount}</span> topics → {FIELDS.find(f=>f.id===activeField).label}</span>
+          :<span>{TOPICS.length} topics · 3 pillars · 4 dimensions</span>}
+      </div>
+    </div>
+    <div style={{flex:1,display:"flex",padding:"8px 14px 10px",gap:14,overflow:"hidden"}}>
+      {/* Fields sidebar */}
+      <div style={{width:178,flexShrink:0,display:"flex",flexDirection:"column",gap:6}}>
+        <div style={{fontSize:9,fontWeight:600,letterSpacing:".14em",color:"rgba(255,255,255,0.2)",
+          textTransform:"uppercase",fontFamily:"'JetBrains Mono',monospace",padding:"0 2px 2px"}}>Career Fields</div>
+        {FIELDS.map(field=>{const isActive=activeField===field.id;const ct=TOPICS.filter(t=>t.fields.includes(field.id)).length;
+          return <button key={field.id} onClick={()=>setActiveField(isActive?null:field.id)}
+            style={{display:"flex",alignItems:"center",gap:9,padding:"8px 10px",borderRadius:8,
+              border:isActive?`1.5px solid ${field.color}55`:"1px solid rgba(255,255,255,0.05)",
+              background:isActive?`linear-gradient(135deg,${field.color}16,${field.color}06)`:"rgba(255,255,255,0.015)",
+              cursor:"pointer",transition:"all .25s",textAlign:"left"}}>
+            <div style={{width:12,height:12,borderRadius:"50%",background:field.color,flexShrink:0,
+              boxShadow:isActive?`0 0 10px ${field.color}66`:"none",transition:"all .25s"}}/>
+            <div style={{flex:1,fontSize:12,fontWeight:isActive?600:450,
+              color:isActive?"#fff":"rgba(255,255,255,0.5)",lineHeight:1.25,transition:"all .25s"}}>{field.label}</div>
+            <span style={{fontSize:10,fontFamily:"'JetBrains Mono',monospace",
+              color:isActive?field.color:"rgba(255,255,255,0.16)",fontWeight:600,transition:"all .25s",flexShrink:0}}>{ct}</span>
+          </button>;})}
+        {activeField&&<button onClick={()=>setActiveField(null)} style={{marginTop:2,padding:"5px 10px",borderRadius:6,
+          border:"1px solid rgba(255,255,255,0.08)",background:"rgba(255,255,255,0.02)",cursor:"pointer",
+          color:"rgba(255,255,255,0.35)",fontSize:11,fontWeight:500}}>✕ Clear filter</button>}
+        <div style={{flex:1}}/>
+        <div style={{fontSize:9.5,color:"rgba(255,255,255,0.14)",lineHeight:1.6,
+          borderTop:"1px solid rgba(255,255,255,0.04)",paddingTop:8}}>
+          <span style={{fontSize:7.5,background:"rgba(248,113,113,0.18)",color:"#F87171",
+            padding:"1px 4px",borderRadius:3,fontWeight:700,fontFamily:"'JetBrains Mono',monospace"}}>HL</span> Higher Level only</div>
+      </div>
+      {/* Matrix grid */}
+      <div style={{flex:1,display:"flex",flexDirection:"column",overflow:"hidden",gap:4}}>
+        <div style={{display:"grid",gridTemplateColumns:"48px 1fr 1fr 1fr",gap:4}}>
+          <div/>{["A","B","C"].map(col=><div key={col} style={{textAlign:"center",padding:"6px 4px",borderRadius:6,
+            background:"rgba(255,255,255,0.025)",border:"1px solid rgba(255,255,255,0.05)"}}>
+            <div style={{fontSize:13,fontWeight:700,color:"rgba(255,255,255,0.7)"}}>{COL_LABELS[col]}</div></div>)}
+        </div>
+        <div style={{flex:1,display:"flex",flexDirection:"column",gap:4}}>
+          {[1,2,3,4].map(row=><div key={row} style={{display:"grid",gridTemplateColumns:"48px 1fr 1fr 1fr",gap:4,
+            flex:row===3?2.5:row===2?1.3:row===4?.55:1}}>
+            <div style={{display:"flex",alignItems:"center",justifyContent:"center",borderRadius:6,
+              background:"rgba(255,255,255,0.025)",border:"1px solid rgba(255,255,255,0.05)"}}>
+              <div style={{writingMode:"vertical-rl",textOrientation:"mixed",transform:"rotate(180deg)",
+                fontSize:11.5,fontWeight:700,color:"rgba(255,255,255,0.35)",letterSpacing:".1em",textTransform:"uppercase"}}>{ROW_LABELS[row]}</div></div>
+            {["A","B","C"].map(col=>{const topics=getTopics(col,row);
+              return <div key={col} style={{display:"flex",flexDirection:"column",gap:3,padding:3,borderRadius:6,
+                background:"rgba(255,255,255,0.008)",border:"1px solid rgba(255,255,255,0.025)"}}>
+                {topics.length===0?<div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",color:"rgba(255,255,255,0.06)",fontSize:10}}>—</div>
+                  :topics.map(t=><TopicCard key={t.code} topic={t} activeField={activeField}/>)}</div>;})}
+          </div>)}
+        </div>
+      </div>
+      {/* Assessment sidebar */}
+      <div style={{width:210,flexShrink:0,display:"flex",flexDirection:"column",gap:6}}>
+        <div style={{display:"flex",alignItems:"center",gap:6}}>
+          <span style={{fontSize:9,fontWeight:600,letterSpacing:".14em",color:"rgba(255,255,255,0.2)",
+            textTransform:"uppercase",fontFamily:"'JetBrains Mono',monospace"}}>Assessment</span>
+          <div style={{flex:1}}/>
+          <div style={{display:"flex",borderRadius:5,overflow:"hidden",border:"1px solid rgba(255,255,255,0.08)"}}>
+            {["sl","hl"].map(l=><button key={l} onClick={()=>setLevel(l)} style={{padding:"3px 10px",fontSize:10,fontWeight:700,
+              fontFamily:"'JetBrains Mono',monospace",cursor:"pointer",border:"none",letterSpacing:".05em",
+              background:level===l?(l==="sl"?`${slC}22`:`${hlC}22`):"transparent",
+              color:level===l?(l==="sl"?slC:hlC):"rgba(255,255,255,0.2)",transition:"all .2s"}}>{l.toUpperCase()}</button>)}
+          </div>
+        </div>
+        {level==="sl"?<>
+          <AssessmentCard title="Paper 1" subtitle="Multiple-choice" color={slC} duration="1 hour" marks="30" weight="20%"><WeightBar percent={20} color={slC}/></AssessmentCard>
+          <AssessmentCard title="Paper 2" subtitle="Short-answer & extended" color={slC} duration="1 hr 30 min" marks="50" weight="40%">
+            <div style={{fontSize:10,color:"rgba(255,255,255,0.3)"}}>Based on product analysis</div><WeightBar percent={40} color={slC}/></AssessmentCard>
+          <AssessmentCard title="Design Project" subtitle="Internal assessment" color={iaC} duration="50 hours" marks="33" weight="40%">
+            <div style={{fontSize:10,color:"rgba(255,255,255,0.3)"}}>Redesign an existing product</div><WeightBar percent={40} color={iaC}/></AssessmentCard>
+          <AssessmentCard title="Collab. Sciences Project" subtitle="Interdisciplinary" color={cspC} duration="10 hours" weight="—"/>
+          <div style={{background:"rgba(255,255,255,0.02)",border:"1px solid rgba(255,255,255,0.05)",borderRadius:8,padding:"8px 11px"}}>
+            <div style={{fontSize:10,fontWeight:600,color:"rgba(255,255,255,0.45)",marginBottom:5}}>Weighting</div>
+            <div style={{display:"flex",height:10,borderRadius:5,overflow:"hidden",gap:2}}>
+              <div style={{width:"20%",background:slC,borderRadius:3}}/><div style={{width:"40%",background:`${slC}88`,borderRadius:3}}/><div style={{width:"40%",background:iaC,borderRadius:3}}/>
+            </div>
+            <div style={{display:"flex",justifyContent:"space-between",marginTop:4,fontSize:9,color:"rgba(255,255,255,0.25)",fontFamily:"'JetBrains Mono',monospace"}}><span>External 60%</span><span>Internal 40%</span></div>
+          </div>
+        </>:<>
+          <AssessmentCard title="Paper 1" subtitle="Multiple-choice · SL + HL" color={hlC} duration="1 hr 30 min" marks="40" weight="25%"><WeightBar percent={25} color={hlC}/></AssessmentCard>
+          <AssessmentCard title="Paper 2" subtitle="Short-answer & extended · SL + HL" color={hlC} duration="2 hr 30 min" marks="80" weight="45%">
+            <div style={{fontSize:10,color:"rgba(255,255,255,0.3)"}}>Based on product analysis</div><WeightBar percent={45} color={hlC}/></AssessmentCard>
+          <AssessmentCard title="Design Project" subtitle="Internal assessment" color={iaC} duration="50 hours" marks="33" weight="30%">
+            <div style={{fontSize:10,color:"rgba(255,255,255,0.3)"}}>Redesign an existing product</div><WeightBar percent={30} color={iaC}/></AssessmentCard>
+          <AssessmentCard title="Collab. Sciences Project" subtitle="Interdisciplinary" color={cspC} duration="10 hours" weight="—"/>
+          <div style={{background:"rgba(255,255,255,0.02)",border:"1px solid rgba(255,255,255,0.05)",borderRadius:8,padding:"8px 11px"}}>
+            <div style={{fontSize:10,fontWeight:600,color:"rgba(255,255,255,0.45)",marginBottom:5}}>Weighting</div>
+            <div style={{display:"flex",height:10,borderRadius:5,overflow:"hidden",gap:2}}>
+              <div style={{width:"25%",background:hlC,borderRadius:3}}/><div style={{width:"45%",background:`${hlC}88`,borderRadius:3}}/><div style={{width:"30%",background:iaC,borderRadius:3}}/>
+            </div>
+            <div style={{display:"flex",justifyContent:"space-between",marginTop:4,fontSize:9,color:"rgba(255,255,255,0.25)",fontFamily:"'JetBrains Mono',monospace"}}><span>External 70%</span><span>Internal 30%</span></div>
+          </div>
+        </>}
+        <div style={{flex:1}}/>
+        <div style={{fontSize:9,color:"rgba(255,255,255,0.13)",lineHeight:1.5,borderTop:"1px solid rgba(255,255,255,0.04)",paddingTop:7}}>
+          <span style={{color:"rgba(255,255,255,0.22)",fontWeight:600}}>AO1</span> Knowledge · <span style={{color:"rgba(255,255,255,0.22)",fontWeight:600}}>AO2</span> Apply · <span style={{color:"rgba(255,255,255,0.22)",fontWeight:600}}>AO3</span> Analyse · <span style={{color:"rgba(255,255,255,0.22)",fontWeight:600}}>AO4</span> Design skills</div>
+      </div>
+    </div>
+  </div>;
+}
+
+/* ───────── PATHWAY COMPONENTS ───────── */
+
+function CourseNode({course,isSelected,isConnected,isIdle,onClick,nodeRef,isIBDT}){
+  const lines=course.label.split("\n");
+  const isIB=course.level==="ib";
+  const isEntry=course.level==="entry";
+  return <button ref={nodeRef} onClick={onClick} style={{
+    background:isSelected?`linear-gradient(145deg,${course.color}25,${course.color}0c)`
+      :isConnected?`linear-gradient(145deg,${course.color}12,${course.color}06)`:"rgba(255,255,255,0.02)",
+    border:isSelected?`2.5px solid ${course.color}99`:isConnected?`2px solid ${course.color}44`:"1.5px solid rgba(255,255,255,0.08)",
+    borderRadius:isEntry?20:18,
+    padding:isEntry?"20px 50px":"18px 30px",
+    cursor:"pointer",transition:"all .35s cubic-bezier(.4,0,.2,1)",
+    opacity:isIdle?1:(isSelected||isConnected)?1:.12,
+    transform:isSelected?"scale(1.06)":"scale(1)",
+    display:"flex",flexDirection:"column",alignItems:"center",gap:5,
+    position:"relative",minWidth:isEntry?220:240,
+    boxShadow:isSelected?`0 0 40px ${course.color}18, 0 0 80px ${course.color}08`:"none",
+  }}>
+    {course.grade&&<div style={{fontSize:11,fontFamily:"'JetBrains Mono',monospace",fontWeight:600,
+      letterSpacing:".1em",color:isSelected?course.color:"rgba(255,255,255,0.28)",
+      textTransform:"uppercase",transition:"all .3s",marginBottom:1}}>{course.grade}</div>}
+    <div style={{width:14,height:14,borderRadius:"50%",background:course.color,
+      boxShadow:isSelected?`0 0 20px ${course.color}88`:`0 0 8px ${course.color}33`,
+      transition:"all .3s",marginBottom:3}}/>
+    {lines.map((line,i)=><div key={i} style={{
+      fontSize:isEntry?28:22,fontWeight:isEntry?800:700,
+      color:isSelected?"#fff":"rgba(255,255,255,0.85)",
+      lineHeight:1.15,textAlign:"center",transition:"all .3s",letterSpacing:"-0.01em",
+    }}>{line}</div>)}
+    {isIB&&<div style={{marginTop:4,fontSize:10,fontWeight:700,fontFamily:"'JetBrains Mono',monospace",
+      background:`${course.color}15`,color:`${course.color}cc`,padding:"3px 12px",borderRadius:6,letterSpacing:".12em"}}>IB DIPLOMA</div>}
+    {isIBDT&&<div style={{marginTop:5,fontSize:11,fontWeight:600,color:course.color,
+      background:`${course.color}12`,border:`1px solid ${course.color}30`,
+      padding:"4px 14px",borderRadius:8,transition:"all .3s",
+      animation:"pulseGlow 2s ease-in-out infinite",
+    }}>Explore the full syllabus →</div>}
+  </button>;
+}
+
+function DetailPanel({course,onClose}){
+  if(!course)return null;
+  return <div style={{position:"absolute",right:32,top:14,bottom:14,width:360,background:"#0d1122ee",
+    backdropFilter:"blur(20px)",border:`1.5px solid ${course.color}35`,borderRadius:20,padding:"26px 28px",
+    display:"flex",flexDirection:"column",gap:18,animation:"slideIn .35s cubic-bezier(.4,0,.2,1)",
+    overflow:"auto",zIndex:20}}>
+    <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between"}}>
+      <div>
+        <div style={{width:14,height:14,borderRadius:"50%",background:course.color,boxShadow:`0 0 14px ${course.color}66`,marginBottom:10}}/>
+        <div style={{fontSize:24,fontWeight:800,color:"#fff",lineHeight:1.15,letterSpacing:"-0.01em"}}>{course.label.replace("\n"," ")}</div>
+        {course.grade&&<div style={{fontSize:11,fontFamily:"'JetBrains Mono',monospace",fontWeight:600,
+          color:course.color,marginTop:6,letterSpacing:".08em"}}>{course.grade}</div>}
+      </div>
+      <button onClick={onClose} style={{background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",
+        borderRadius:10,width:34,height:34,cursor:"pointer",color:"rgba(255,255,255,0.45)",fontSize:16,
+        display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>✕</button>
+    </div>
+    <div style={{fontSize:14,color:"rgba(255,255,255,0.5)",lineHeight:1.65}}>{course.desc}</div>
+    <div>
+      <div style={{fontSize:10,fontWeight:700,letterSpacing:".14em",color:"rgba(255,255,255,0.25)",
+        textTransform:"uppercase",fontFamily:"'JetBrains Mono',monospace",marginBottom:10}}>Skills you'll develop</div>
+      <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
+        {course.skills.map((s,i)=><span key={i} style={{fontSize:12,fontWeight:500,padding:"5px 12px",borderRadius:8,
+          background:`${course.color}12`,border:`1px solid ${course.color}28`,color:"rgba(255,255,255,0.7)"}}>{s}</span>)}
+      </div>
+    </div>
+    <div>
+      <div style={{fontSize:10,fontWeight:700,letterSpacing:".14em",color:"rgba(255,255,255,0.25)",
+        textTransform:"uppercase",fontFamily:"'JetBrains Mono',monospace",marginBottom:10}}>Career connections</div>
+      <div style={{display:"flex",flexDirection:"column",gap:6}}>
+        {course.careers.map((c,i)=><div key={i} style={{display:"flex",alignItems:"center",gap:9,fontSize:13,color:"rgba(255,255,255,0.55)"}}>
+          <span style={{width:6,height:6,borderRadius:"50%",background:course.color,opacity:.5,flexShrink:0}}/>{c}</div>)}
+      </div>
+    </div>
+  </div>;
+}
+
+/* ───────── PATHWAY VIEW ───────── */
+
+function PathwayView({onDrillDown}){
+  const [selected,setSelected]=useState(null);
+  const nodeRefs=useRef({});
+  const containerRef=useRef(null);
+  const [lines,setLines]=useState([]);
+  const connectedIds=selected?[selected,...CONNECTIONS.filter(c=>c.from===selected||c.to===selected).map(c=>c.from===selected?c.to:c.from)]:[];
+
+  useEffect(()=>{
+    function calc(){
+      if(!containerRef.current)return;
+      const cR=containerRef.current.getBoundingClientRect();
+      setLines(CONNECTIONS.map(conn=>{
+        const fE=nodeRefs.current[conn.from],tE=nodeRefs.current[conn.to];
+        if(!fE||!tE)return null;
+        const fR=fE.getBoundingClientRect(),tR=tE.getBoundingClientRect();
+        return{...conn,x1:fR.left+fR.width/2-cR.left,y1:fR.top+fR.height-cR.top,
+          x2:tR.left+tR.width/2-cR.left,y2:tR.top-cR.top};
+      }).filter(Boolean));}
+    calc();window.addEventListener("resize",calc);
+    return()=>window.removeEventListener("resize",calc);
+  },[selected]);
+
+  const isIdle=!selected;
+  function handleClick(id){if(id==="ibdt"){onDrillDown();return;}setSelected(selected===id?null:id);}
+
+  return <div ref={containerRef} style={{width:"100%",height:"100%",display:"flex",flexDirection:"column",overflow:"hidden",position:"relative"}}>
+    {/* Header */}
+    <div style={{padding:"14px 36px 12px",display:"flex",alignItems:"center",justifyContent:"space-between",
+      borderBottom:"1px solid rgba(255,255,255,0.06)",flexShrink:0,zIndex:10}}>
+      <div style={{display:"flex",alignItems:"baseline",gap:14}}>
+        <h1 style={{fontSize:28,fontWeight:900,color:"#fff",letterSpacing:"-0.03em"}}>Design Technology Pathway</h1>
+        <span style={{fontSize:10,fontWeight:600,letterSpacing:".12em",color:"rgba(255,255,255,0.2)",
+          textTransform:"uppercase",fontFamily:"'JetBrains Mono',monospace"}}>Curriculum Night 2026</span>
+      </div>
+      <div style={{fontSize:13,color:"rgba(255,255,255,0.3)",fontWeight:400}}>Click any course to explore</div>
+    </div>
+
+    {/* SVG lines */}
+    <svg style={{position:"absolute",inset:0,width:"100%",height:"100%",pointerEvents:"none",zIndex:1}}>
+      {lines.map((l,i)=>{
+        const isActive=selected&&(l.from===selected||l.to===selected);
+        const my=(l.y1+l.y2)/2;
+        return <path key={i} d={`M ${l.x1} ${l.y1} C ${l.x1} ${my}, ${l.x2} ${my}, ${l.x2} ${l.y2}`}
+          fill="none" stroke={isActive?COURSES[l.from].color:"rgba(255,255,255,0.08)"}
+          strokeWidth={isActive?3:1.5} strokeDasharray={isActive?"none":"6 6"}
+          style={{transition:"all .35s cubic-bezier(.4,0,.2,1)"}}
+          opacity={isIdle?.4:isActive?.75:.04}/>;
+      })}
+    </svg>
+
+    {/* Course nodes */}
+    <div style={{flex:1,display:"flex",flexDirection:"column",justifyContent:"center",alignItems:"center",
+      gap:60,position:"relative",zIndex:5,paddingBottom:20}}>
+      {/* Level labels */}
+      <div style={{position:"absolute",left:36,top:"50%",transform:"translateY(-50%)",
+        display:"flex",flexDirection:"column",gap:120,alignItems:"flex-start"}}>
+        {[{l:"Entry",s:"Foundation"},{l:"MYP 4–5",s:"Grades 9–10"},{l:"IB DP",s:"Grades 11–12"}].map((x,i)=>
+          <div key={i}><div style={{fontSize:15,fontWeight:700,color:"rgba(255,255,255,0.3)",letterSpacing:".05em"}}>{x.l}</div>
+          <div style={{fontSize:11,color:"rgba(255,255,255,0.15)",fontFamily:"'JetBrains Mono',monospace"}}>{x.s}</div></div>)}
+      </div>
+
+      <div style={{display:"flex",justifyContent:"center"}}>
+        <CourseNode course={COURSES.design} isSelected={selected==="design"} isConnected={connectedIds.includes("design")}
+          isIdle={isIdle} onClick={()=>handleClick("design")} nodeRef={el=>nodeRefs.current["design"]=el}/>
+      </div>
+      <div style={{display:"flex",justifyContent:"center",gap:48}}>
+        {["digmedia","proddesign","csrobotics"].map(id=>
+          <CourseNode key={id} course={COURSES[id]} isSelected={selected===id} isConnected={connectedIds.includes(id)}
+            isIdle={isIdle} onClick={()=>handleClick(id)} nodeRef={el=>nodeRefs.current[id]=el}/>)}
+      </div>
+      <div style={{display:"flex",justifyContent:"center",gap:70}}>
+        <CourseNode course={COURSES.ibart} isSelected={selected==="ibart"} isConnected={connectedIds.includes("ibart")}
+          isIdle={isIdle} onClick={()=>handleClick("ibart")} nodeRef={el=>nodeRefs.current["ibart"]=el}/>
+        <CourseNode course={COURSES.ibdt} isSelected={selected==="ibdt"} isConnected={connectedIds.includes("ibdt")}
+          isIdle={isIdle} onClick={()=>handleClick("ibdt")} nodeRef={el=>nodeRefs.current["ibdt"]=el} isIBDT={true}/>
+      </div>
+    </div>
+
+    {selected&&selected!=="ibdt"&&<DetailPanel course={COURSES[selected]} onClose={()=>setSelected(null)}/>}
+  </div>;
+}
+
+/* ───────── APP ───────── */
+
+function App(){
+  const [view,setView]=useState("pathway");
+  return <div style={{width:"100vw",height:"100vh",background:"#0B0F1A",
+    backgroundImage:"radial-gradient(ellipse at 15% 25%,rgba(139,92,246,.07) 0%,transparent 50%),radial-gradient(ellipse at 85% 75%,rgba(6,182,212,.06) 0%,transparent 50%)",
+    fontFamily:"'Outfit',sans-serif",overflow:"hidden"}}>
+    {view==="pathway"?<PathwayView onDrillDown={()=>setView("matrix")}/>:<MatrixView onBack={()=>setView("pathway")}/>}
+  </div>;
+}
+
+ReactDOM.render(<App/>,document.getElementById("root"));
+</script>
+</body>
+</html>
