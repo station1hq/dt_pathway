@@ -166,9 +166,31 @@ function AssessmentCard({title,subtitle,duration,marks,weight,color,children}){
 
 function MatrixView({onBack}){
   const [activeField,setActiveField]=useState(null);
+  const [idleField,setIdleField]=useState(null);
   const [level,setLevel]=useState("sl");
+  const idleTimer=useRef(null);const cycleTimer=useRef(null);const cycleIdx=useRef(0);
+  const FIELD_IDS=FIELDS.map(f=>f.id);
+  const effectiveField=activeField||idleField;
+
+  function stopIdle(){clearInterval(cycleTimer.current);setIdleField(null);}
+  function startIdle(){
+    cycleIdx.current=0;setIdleField(FIELD_IDS[0]);
+    cycleTimer.current=setInterval(()=>{
+      cycleIdx.current=(cycleIdx.current+1)%FIELD_IDS.length;
+      setIdleField(FIELD_IDS[cycleIdx.current]);
+    },3600);
+  }
+  function resetIdleTimer(){
+    clearTimeout(idleTimer.current);stopIdle();
+    idleTimer.current=setTimeout(startIdle,5000);
+  }
+  useEffect(()=>{
+    idleTimer.current=setTimeout(startIdle,2000);
+    return()=>{clearTimeout(idleTimer.current);clearInterval(cycleTimer.current);};
+  },[]);
+
   const getTopics=(col,row)=>TOPICS.filter(t=>t.col===col&&t.row===row);
-  const activeCount=activeField?TOPICS.filter(t=>t.fields.includes(activeField)).length:TOPICS.length;
+  const activeCount=effectiveField?TOPICS.filter(t=>t.fields.includes(effectiveField)).length:TOPICS.length;
   const slC="#60A5FA",hlC="#F87171",iaC="#A78BFA",cspC="#34D399";
 
   return <div style={{width:"100%",height:"100%",display:"flex",flexDirection:"column",overflow:"hidden",animation:"fadeIn .4s ease"}}>
@@ -194,8 +216,15 @@ function MatrixView({onBack}){
         <span><b style={{color:"rgba(255,255,255,0.55)"}}>SL</b> 150h</span>
         <span><b style={{color:"rgba(255,255,255,0.55)"}}>HL</b> 240h</span>
         <span style={{width:1,height:14,background:"rgba(255,255,255,0.08)"}}/>
-        {activeField
-          ?<span style={{fontSize:12}}><span style={{color:FIELDS.find(f=>f.id===activeField).color,fontWeight:700}}>{activeCount}</span> topics → {FIELDS.find(f=>f.id===activeField).label}</span>
+        {effectiveField
+          ?<span style={{display:"flex",alignItems:"center",gap:6,fontSize:12}}>
+            <span style={{color:FIELDS.find(f=>f.id===effectiveField).color,fontWeight:700}}>{activeCount}</span>
+            topics → {FIELDS.find(f=>f.id===effectiveField).label}
+            {idleField&&!activeField&&<span style={{display:"flex",alignItems:"center",gap:4,marginLeft:4,color:"rgba(255,255,255,0.2)",fontSize:11}}>
+              <span style={{width:5,height:5,borderRadius:"50%",background:"rgba(255,255,255,0.22)",display:"inline-block",animation:"pulseGlow 1.5s ease-in-out infinite"}}/>
+              auto-preview
+            </span>}
+          </span>
           :<span>{TOPICS.length} topics · 3 pillars · 4 dimensions</span>}
       </div>
     </div>
@@ -204,8 +233,8 @@ function MatrixView({onBack}){
       <div style={{width:178,flexShrink:0,display:"flex",flexDirection:"column",gap:6}}>
         <div style={{fontSize:9,fontWeight:600,letterSpacing:".14em",color:"rgba(255,255,255,0.2)",
           textTransform:"uppercase",fontFamily:"'JetBrains Mono',monospace",padding:"0 2px 2px"}}>Career Fields</div>
-        {FIELDS.map(field=>{const isActive=activeField===field.id;const ct=TOPICS.filter(t=>t.fields.includes(field.id)).length;
-          return <button key={field.id} onClick={()=>setActiveField(isActive?null:field.id)}
+        {FIELDS.map(field=>{const isActive=effectiveField===field.id;const ct=TOPICS.filter(t=>t.fields.includes(field.id)).length;
+          return <button key={field.id} onClick={()=>{resetIdleTimer();setActiveField(activeField===field.id?null:field.id);}}
             style={{display:"flex",alignItems:"center",gap:9,padding:"8px 10px",borderRadius:8,
               border:isActive?`1.5px solid ${field.color}55`:"1px solid rgba(255,255,255,0.05)",
               background:isActive?`linear-gradient(135deg,${field.color}16,${field.color}06)`:"rgba(255,255,255,0.015)",
@@ -217,7 +246,7 @@ function MatrixView({onBack}){
             <span style={{fontSize:10,fontFamily:"'JetBrains Mono',monospace",
               color:isActive?field.color:"rgba(255,255,255,0.16)",fontWeight:600,transition:"all .25s",flexShrink:0}}>{ct}</span>
           </button>;})}
-        {activeField&&<button onClick={()=>setActiveField(null)} style={{marginTop:2,padding:"5px 10px",borderRadius:6,
+        {activeField&&<button onClick={()=>{resetIdleTimer();setActiveField(null);}} style={{marginTop:2,padding:"5px 10px",borderRadius:6,
           border:"1px solid rgba(255,255,255,0.08)",background:"rgba(255,255,255,0.02)",cursor:"pointer",
           color:"rgba(255,255,255,0.35)",fontSize:11,fontWeight:500}}>✕ Clear filter</button>}
         <div style={{flex:1}}/>
@@ -244,7 +273,7 @@ function MatrixView({onBack}){
               return <div key={col} style={{display:"flex",flexDirection:"column",gap:3,padding:3,borderRadius:6,
                 background:"rgba(255,255,255,0.008)",border:"1px solid rgba(255,255,255,0.025)"}}>
                 {topics.length===0?<div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",color:"rgba(255,255,255,0.06)",fontSize:10}}>—</div>
-                  :topics.map(t=><TopicCard key={t.code} topic={t} activeField={activeField} level={level}/>)}</div>;})}
+                  :topics.map(t=><TopicCard key={t.code} topic={t} activeField={effectiveField} level={level}/>)}</div>;})}
           </div>)}
         </div>
       </div>
