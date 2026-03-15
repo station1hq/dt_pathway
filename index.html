@@ -197,10 +197,6 @@ function MatrixView({onBack}){
     <div style={{padding:"10px 24px 9px",display:"flex",alignItems:"center",justifyContent:"space-between",
       borderBottom:"1px solid rgba(255,255,255,0.06)",flexShrink:0}}>
       <div style={{display:"flex",alignItems:"center",gap:12}}>
-        <button onClick={onBack} style={{display:"flex",alignItems:"center",gap:6,padding:"5px 12px",borderRadius:8,
-          border:"1px solid rgba(255,255,255,0.1)",background:"rgba(255,255,255,0.03)",cursor:"pointer",
-          color:"rgba(255,255,255,0.5)",fontSize:12,fontWeight:500,transition:"all .2s"}}>
-          <span style={{fontSize:16,lineHeight:1}}>←</span> Pathway</button>
         <h1 style={{fontSize:22,fontWeight:800,color:"#fff",letterSpacing:"-0.02em"}}>IB Design Technology</h1>
         <span style={{fontSize:14,fontWeight:300,color:"rgba(255,255,255,0.3)"}}>Syllabus Matrix</span>
         <span style={{fontSize:9,fontWeight:600,letterSpacing:".12em",color:"rgba(255,255,255,0.18)",
@@ -231,6 +227,9 @@ function MatrixView({onBack}){
     <div style={{flex:1,display:"flex",padding:"8px 14px 10px",gap:14,overflow:"hidden"}}>
       {/* Fields sidebar */}
       <div style={{width:178,flexShrink:0,display:"flex",flexDirection:"column",gap:6}}>
+        <div style={{display:"flex",alignItems:"center",justifyContent:"center",paddingBottom:4,borderBottom:"1px solid rgba(255,255,255,0.04)",marginBottom:2}}>
+          <img src="cas_logo.png" style={{width:100,height:100,filter:"drop-shadow(0 0 10px rgba(220,50,50,0.5)) drop-shadow(0 0 30px rgba(220,50,50,0.2))",animation:"pulseGlow 3s ease-in-out infinite"}} alt="CAS"/>
+        </div>
         <div style={{fontSize:9,fontWeight:600,letterSpacing:".14em",color:"rgba(255,255,255,0.2)",
           textTransform:"uppercase",fontFamily:"'JetBrains Mono',monospace",padding:"0 2px 2px"}}>Career Fields</div>
         {FIELDS.map(field=>{const isActive=effectiveField===field.id;const ct=TOPICS.filter(t=>t.fields.includes(field.id)).length;
@@ -254,6 +253,10 @@ function MatrixView({onBack}){
           borderTop:"1px solid rgba(255,255,255,0.04)",paddingTop:8}}>
           <span style={{fontSize:7.5,background:"rgba(248,113,113,0.18)",color:"#F87171",
             padding:"1px 4px",borderRadius:3,fontWeight:700,fontFamily:"'JetBrains Mono',monospace"}}>HL</span> Higher Level only</div>
+        <button onClick={onBack} style={{display:"flex",alignItems:"center",justifyContent:"center",gap:6,padding:"7px 10px",borderRadius:8,
+          border:"1px solid rgba(255,255,255,0.08)",background:"rgba(255,255,255,0.02)",cursor:"pointer",
+          color:"rgba(255,255,255,0.35)",fontSize:12,fontWeight:500,transition:"all .2s",marginTop:4}}>
+          <span style={{fontSize:15,lineHeight:1}}>←</span> Back to Pathway</button>
       </div>
       {/* Matrix grid */}
       <div style={{flex:1,display:"flex",flexDirection:"column",overflow:"hidden",gap:4}}>
@@ -279,6 +282,9 @@ function MatrixView({onBack}){
       </div>
       {/* Assessment sidebar */}
       <div style={{width:210,flexShrink:0,display:"flex",flexDirection:"column",gap:6}}>
+        <div style={{display:"flex",alignItems:"center",justifyContent:"center",paddingBottom:4,borderBottom:"1px solid rgba(255,255,255,0.04)",marginBottom:2}}>
+          <img src="ib_logo.png" style={{width:100,height:100,opacity:1,filter:"drop-shadow(0 0 16px rgba(56,189,248,0.7)) drop-shadow(0 0 40px rgba(56,189,248,0.4)) drop-shadow(0 0 70px rgba(56,189,248,0.2))",animation:"pulseGlow 3s ease-in-out infinite"}} alt="IB"/>
+        </div>
         <div style={{display:"flex",alignItems:"center",gap:6}}>
           <span style={{fontSize:9,fontWeight:600,letterSpacing:".14em",color:"rgba(255,255,255,0.2)",
             textTransform:"uppercase",fontFamily:"'JetBrains Mono',monospace"}}>Assessment</span>
@@ -452,7 +458,8 @@ function PathwayView({onDrillDown}){
     {/* Header */}
     <div style={{padding:"14px 36px 12px",display:"flex",alignItems:"center",justifyContent:"space-between",
       borderBottom:"1px solid rgba(255,255,255,0.06)",flexShrink:0,zIndex:10}}>
-      <div style={{display:"flex",alignItems:"baseline",gap:14}}>
+      <div style={{display:"flex",alignItems:"center",gap:14}}>
+        <img src="cas_logo.png" style={{width:72,height:72,flexShrink:0,filter:"drop-shadow(0 0 10px rgba(220,50,50,0.5)) drop-shadow(0 0 30px rgba(220,50,50,0.2))",animation:"pulseGlow 3s ease-in-out infinite"}} alt="CAS"/>
         <h1 style={{fontSize:28,fontWeight:900,color:"#fff",letterSpacing:"-0.03em"}}>Design Technology Pathway</h1>
         <span style={{fontSize:10,fontWeight:600,letterSpacing:".12em",color:"rgba(255,255,255,0.2)",
           textTransform:"uppercase",fontFamily:"'JetBrains Mono',monospace"}}>Curriculum Night 2026</span>
