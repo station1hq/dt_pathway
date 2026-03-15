@@ -12,6 +12,7 @@ button{font-family:inherit;outline:none}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 @keyframes slideIn{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}}
 @keyframes pulseGlow{0%,100%{opacity:.6}50%{opacity:1}}
+@keyframes nodeEnter{from{opacity:0;transform:scale(.88) translateY(18px)}to{opacity:1;transform:scale(1) translateY(0)}}
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
@@ -29,40 +30,38 @@ const { useState, useRef, useEffect } = React;
 /* ───────── DATA ───────── */
 
 const FIELDS = [
-  { id: "product", label: "Product Design", color: "#E85D75" },
   { id: "engineering", label: "Engineering", color: "#F59E0B" },
-  { id: "ux", label: "UX / Human Factors", color: "#8B5CF6" },
-  { id: "business", label: "Business & Enterprise", color: "#10B981" },
-  { id: "enviro", label: "Environmental Sci.", color: "#06B6D4" },
-  { id: "cs", label: "CS & Digital", color: "#3B82F6" },
+  { id: "business", label: "Business", color: "#10B981" },
   { id: "architecture", label: "Architecture", color: "#F97316" },
+  { id: "industrial", label: "Industrial", color: "#E85D75" },
+  { id: "enviro", label: "Environmental", color: "#06B6D4" },
 ];
 
 const TOPICS = [
-  { code:"A1.1",name:"Ergonomics",col:"A",row:1,hl:false,fields:["product","ux","architecture","engineering"] },
-  { code:"B1.1",name:"User-centred design",col:"B",row:1,hl:false,fields:["product","ux","business"] },
-  { code:"C1.1",name:"Responsibility of the designer",col:"C",row:1,hl:false,fields:["product","business","enviro"] },
-  { code:"C1.2",name:"Inclusive design",col:"C",row:1,hl:false,fields:["product","ux","architecture"] },
-  { code:"C1.3",name:"Beyond usability",col:"C",row:1,hl:true,fields:["ux","product","business"] },
-  { code:"A2.1",name:"User-centred research methods",col:"A",row:2,hl:false,fields:["ux","product","business"] },
-  { code:"A2.2",name:"Prototyping techniques",col:"A",row:2,hl:false,fields:["product","engineering","cs","architecture"] },
-  { code:"B2.1",name:"The design process",col:"B",row:2,hl:false,fields:["product","ux","business","engineering"] },
-  { code:"B2.2",name:"Modelling & prototyping",col:"B",row:2,hl:false,fields:["product","engineering","cs","architecture"] },
-  { code:"C2.1",name:"Design for sustainability",col:"C",row:2,hl:false,fields:["enviro","product","business","architecture"] },
-  { code:"C2.2",name:"Design for circular economy",col:"C",row:2,hl:false,fields:["enviro","business","engineering","product"] },
-  { code:"A3.1",name:"Material classification & properties",col:"A",row:3,hl:false,fields:["engineering","product","architecture","enviro"] },
+  { code:"A1.1",name:"Ergonomics",col:"A",row:1,hl:false,fields:["industrial","architecture","engineering"] },
+  { code:"B1.1",name:"User-centred design",col:"B",row:1,hl:false,fields:["industrial","business"] },
+  { code:"C1.1",name:"Responsibility of the designer",col:"C",row:1,hl:false,fields:["industrial","business","enviro"] },
+  { code:"C1.2",name:"Inclusive design",col:"C",row:1,hl:false,fields:["industrial","architecture"] },
+  { code:"C1.3",name:"Beyond usability",col:"C",row:1,hl:true,fields:["industrial","business"] },
+  { code:"A2.1",name:"User-centred research methods",col:"A",row:2,hl:false,fields:["industrial","business"] },
+  { code:"A2.2",name:"Prototyping techniques",col:"A",row:2,hl:false,fields:["industrial","engineering","architecture"] },
+  { code:"B2.1",name:"The design process",col:"B",row:2,hl:false,fields:["industrial","business","engineering"] },
+  { code:"B2.2",name:"Modelling & prototyping",col:"B",row:2,hl:false,fields:["industrial","engineering","architecture"] },
+  { code:"C2.1",name:"Design for sustainability",col:"C",row:2,hl:false,fields:["enviro","industrial","business","architecture"] },
+  { code:"C2.2",name:"Design for circular economy",col:"C",row:2,hl:false,fields:["enviro","business","engineering","industrial"] },
+  { code:"A3.1",name:"Material classification & properties",col:"A",row:3,hl:false,fields:["engineering","industrial","architecture","enviro"] },
   { code:"A3.2",name:"Structural systems",col:"A",row:3,hl:true,fields:["engineering","architecture"] },
-  { code:"A3.3",name:"Mechanical systems",col:"A",row:3,hl:true,fields:["engineering","product"] },
-  { code:"A3.4",name:"Electronic systems",col:"A",row:3,hl:true,fields:["engineering","cs","product"] },
-  { code:"B3.1",name:"Material selection",col:"B",row:3,hl:false,fields:["product","engineering","architecture","enviro"] },
+  { code:"A3.3",name:"Mechanical systems",col:"A",row:3,hl:true,fields:["engineering","industrial"] },
+  { code:"A3.4",name:"Electronic systems",col:"A",row:3,hl:true,fields:["engineering","industrial"] },
+  { code:"B3.1",name:"Material selection",col:"B",row:3,hl:false,fields:["industrial","engineering","architecture","enviro"] },
   { code:"B3.2",name:"Structural systems application",col:"B",row:3,hl:true,fields:["engineering","architecture"] },
-  { code:"B3.3",name:"Mechanical systems application",col:"B",row:3,hl:true,fields:["engineering","product"] },
-  { code:"B3.4",name:"Electronic systems application",col:"B",row:3,hl:true,fields:["engineering","cs","product"] },
-  { code:"C3.1",name:"Product analysis & evaluation",col:"C",row:3,hl:false,fields:["product","business","ux","engineering"] },
+  { code:"B3.3",name:"Mechanical systems application",col:"B",row:3,hl:true,fields:["engineering","industrial"] },
+  { code:"B3.4",name:"Electronic systems application",col:"B",row:3,hl:true,fields:["engineering","industrial"] },
+  { code:"C3.1",name:"Product analysis & evaluation",col:"C",row:3,hl:false,fields:["industrial","business","engineering"] },
   { code:"C3.2",name:"Life-cycle analysis",col:"C",row:3,hl:true,fields:["enviro","engineering","business"] },
   { code:"A4.1",name:"Manufacturing techniques",col:"A",row:4,hl:true,fields:["engineering","business","architecture"] },
   { code:"B4.1",name:"Production systems",col:"B",row:4,hl:true,fields:["business","engineering"] },
-  { code:"C4.1",name:"Design for manufacture strategies",col:"C",row:4,hl:true,fields:["business","engineering","enviro","product"] },
+  { code:"C4.1",name:"Design for manufacture strategies",col:"C",row:4,hl:true,fields:["business","engineering","enviro","industrial"] },
 ];
 
 const COURSES = {
@@ -74,7 +73,7 @@ const COURSES = {
     desc:"Students explore digital and traditional media through photography, video, graphic design, animation, and mixed-media art. Emphasis on visual storytelling, digital tools, and developing a personal creative voice.",
     skills:["Adobe Creative Suite","Photography & videography","Graphic design","Animation & motion","Visual storytelling","Mixed-media techniques"],
     careers:["Graphic designer","Film & video editor","Animator","Photographer","Art director","Media producer"]},
-  proddesign:{ id:"proddesign",label:"Product\nDesign",level:"myp",color:"#10B981",grade:"MYP 4–5 · Grades 9–10",
+  proddesign:{ id:"proddesign",label:"Product Design &\nEntrepreneurship",level:"myp",color:"#10B981",grade:"MYP 4–5 · Grades 9–10",
     desc:"Students learn to design and build physical products through the MYP design cycle. Hands-on work with materials, prototyping, CAD modelling, and user-centred research prepares students for IB Design Technology.",
     skills:["CAD modelling","Prototyping & fabrication","Material exploration","User-centred research","Design cycle methodology","Technical drawing"],
     careers:["Product designer","Industrial designer","Design engineer","Entrepreneur","Manufacturing engineer","Furniture designer"]},
@@ -112,13 +111,14 @@ function Dot({fieldId,active,dimmed}){
     margin:"0 1.5px"}} title={f.label}/>;
 }
 
-function TopicCard({topic,activeField}){
+function TopicCard({topic,activeField,level}){
   const rel=!activeField||topic.fields.includes(activeField);
   const lit=activeField&&topic.fields.includes(activeField);
   const ac=activeField?FIELDS.find(f=>f.id===activeField).color:null;
+  const hlDimmed=level==="sl"&&topic.hl;
   return <div style={{background:lit?`linear-gradient(135deg,${ac}16,${ac}08)`:"rgba(255,255,255,0.025)",
     border:lit?`1.5px solid ${ac}50`:"1px solid rgba(255,255,255,0.055)",borderRadius:8,padding:"7px 10px",
-    transition:"all .3s cubic-bezier(.4,0,.2,1)",opacity:rel?1:.08,display:"flex",alignItems:"center",gap:8}}>
+    transition:"all .3s cubic-bezier(.4,0,.2,1)",opacity:hlDimmed?.08:rel?1:.08,display:"flex",alignItems:"center",gap:8}}>
     <div style={{flex:1,minWidth:0}}>
       <div style={{display:"flex",alignItems:"center",gap:5}}>
         <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,
@@ -183,6 +183,12 @@ function MatrixView({onBack}){
         <span style={{fontSize:14,fontWeight:300,color:"rgba(255,255,255,0.3)"}}>Syllabus Matrix</span>
         <span style={{fontSize:9,fontWeight:600,letterSpacing:".12em",color:"rgba(255,255,255,0.18)",
           textTransform:"uppercase",fontFamily:"'JetBrains Mono',monospace"}}>First Assessment 2027</span>
+        <div style={{display:"flex",borderRadius:6,overflow:"hidden",border:"1px solid rgba(255,255,255,0.1)"}}>
+          {["sl","hl"].map(l=><button key={l} onClick={()=>setLevel(l)} style={{padding:"4px 14px",fontSize:11,fontWeight:700,
+            fontFamily:"'JetBrains Mono',monospace",cursor:"pointer",border:"none",letterSpacing:".06em",
+            background:level===l?(l==="sl"?`${slC}22`:`${hlC}22`):"transparent",
+            color:level===l?(l==="sl"?slC:hlC):"rgba(255,255,255,0.25)",transition:"all .2s"}}>{l.toUpperCase()}</button>)}
+        </div>
       </div>
       <div style={{display:"flex",alignItems:"center",gap:14,fontSize:11,color:"rgba(255,255,255,0.28)"}}>
         <span><b style={{color:"rgba(255,255,255,0.55)"}}>SL</b> 150h</span>
@@ -238,7 +244,7 @@ function MatrixView({onBack}){
               return <div key={col} style={{display:"flex",flexDirection:"column",gap:3,padding:3,borderRadius:6,
                 background:"rgba(255,255,255,0.008)",border:"1px solid rgba(255,255,255,0.025)"}}>
                 {topics.length===0?<div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",color:"rgba(255,255,255,0.06)",fontSize:10}}>—</div>
-                  :topics.map(t=><TopicCard key={t.code} topic={t} activeField={activeField}/>)}</div>;})}
+                  :topics.map(t=><TopicCard key={t.code} topic={t} activeField={activeField} level={level}/>)}</div>;})}
           </div>)}
         </div>
       </div>
@@ -247,13 +253,6 @@ function MatrixView({onBack}){
         <div style={{display:"flex",alignItems:"center",gap:6}}>
           <span style={{fontSize:9,fontWeight:600,letterSpacing:".14em",color:"rgba(255,255,255,0.2)",
             textTransform:"uppercase",fontFamily:"'JetBrains Mono',monospace"}}>Assessment</span>
-          <div style={{flex:1}}/>
-          <div style={{display:"flex",borderRadius:5,overflow:"hidden",border:"1px solid rgba(255,255,255,0.08)"}}>
-            {["sl","hl"].map(l=><button key={l} onClick={()=>setLevel(l)} style={{padding:"3px 10px",fontSize:10,fontWeight:700,
-              fontFamily:"'JetBrains Mono',monospace",cursor:"pointer",border:"none",letterSpacing:".05em",
-              background:level===l?(l==="sl"?`${slC}22`:`${hlC}22`):"transparent",
-              color:level===l?(l==="sl"?slC:hlC):"rgba(255,255,255,0.2)",transition:"all .2s"}}>{l.toUpperCase()}</button>)}
-          </div>
         </div>
         {level==="sl"?<>
           <AssessmentCard title="Paper 1" subtitle="Multiple-choice" color={slC} duration="1 hour" marks="30" weight="20%"><WeightBar percent={20} color={slC}/></AssessmentCard>
@@ -294,7 +293,7 @@ function MatrixView({onBack}){
 
 /* ───────── PATHWAY COMPONENTS ───────── */
 
-function CourseNode({course,isSelected,isConnected,isIdle,onClick,nodeRef,isIBDT}){
+function CourseNode({course,isSelected,isConnected,isIdle,onClick,nodeRef,isIBDT,enterDelay=0}){
   const lines=course.label.split("\n");
   const isIB=course.level==="ib";
   const isEntry=course.level==="entry";
@@ -304,7 +303,7 @@ function CourseNode({course,isSelected,isConnected,isIdle,onClick,nodeRef,isIBDT
     border:isSelected?`2.5px solid ${course.color}99`:isConnected?`2px solid ${course.color}44`:"1.5px solid rgba(255,255,255,0.08)",
     borderRadius:isEntry?20:18,
     padding:isEntry?"20px 50px":"18px 30px",
-    cursor:"pointer",transition:"all .35s cubic-bezier(.4,0,.2,1)",
+    cursor:"pointer",transition:"all .35s cubic-bezier(.4,0,.2,1)",animation:`nodeEnter .55s cubic-bezier(.34,1.56,.64,1) ${enterDelay}ms both`,
     opacity:isIdle?1:(isSelected||isConnected)?1:.12,
     transform:isSelected?"scale(1.06)":"scale(1)",
     display:"flex",flexDirection:"column",alignItems:"center",gap:5,
@@ -373,10 +372,28 @@ function DetailPanel({course,onClose}){
 
 function PathwayView({onDrillDown}){
   const [selected,setSelected]=useState(null);
+  const [idleSelected,setIdleSelected]=useState(null);
+  const [linesReady,setLinesReady]=useState(false);
   const nodeRefs=useRef({});
   const containerRef=useRef(null);
   const [lines,setLines]=useState([]);
-  const connectedIds=selected?[selected,...CONNECTIONS.filter(c=>c.from===selected||c.to===selected).map(c=>c.from===selected?c.to:c.from)]:[];
+  const idleTimer=useRef(null);const cycleTimer=useRef(null);const cycleIdx=useRef(0);
+  const CYCLE_IDS=["design","digmedia","proddesign","csrobotics","ibart","ibdt"];
+  const effectiveSelected=selected||idleSelected;
+  const connectedIds=effectiveSelected?[effectiveSelected,...CONNECTIONS.filter(c=>c.from===effectiveSelected||c.to===effectiveSelected).map(c=>c.from===effectiveSelected?c.to:c.from)]:[];
+
+  function stopIdle(){clearInterval(cycleTimer.current);setIdleSelected(null);}
+  function startIdle(){
+    cycleIdx.current=0;setIdleSelected(CYCLE_IDS[0]);
+    cycleTimer.current=setInterval(()=>{
+      cycleIdx.current=(cycleIdx.current+1)%CYCLE_IDS.length;
+      setIdleSelected(CYCLE_IDS[cycleIdx.current]);
+    },2200);
+  }
+  function resetIdleTimer(){
+    clearTimeout(idleTimer.current);stopIdle();
+    idleTimer.current=setTimeout(startIdle,5000);
+  }
 
   useEffect(()=>{
     function calc(){
@@ -391,10 +408,16 @@ function PathwayView({onDrillDown}){
       }).filter(Boolean));}
     calc();window.addEventListener("resize",calc);
     return()=>window.removeEventListener("resize",calc);
-  },[selected]);
+  },[effectiveSelected]);
 
-  const isIdle=!selected;
-  function handleClick(id){if(id==="ibdt"){onDrillDown();return;}setSelected(selected===id?null:id);}
+  useEffect(()=>{
+    setTimeout(()=>setLinesReady(true),200);
+    idleTimer.current=setTimeout(startIdle,3500);
+    return()=>{clearTimeout(idleTimer.current);clearInterval(cycleTimer.current);};
+  },[]);
+
+  const isIdle=!effectiveSelected;
+  function handleClick(id){resetIdleTimer();if(id==="ibdt"){onDrillDown();return;}setSelected(selected===id?null:id);}
 
   return <div ref={containerRef} style={{width:"100%",height:"100%",display:"flex",flexDirection:"column",overflow:"hidden",position:"relative"}}>
     {/* Header */}
@@ -405,19 +428,27 @@ function PathwayView({onDrillDown}){
         <span style={{fontSize:10,fontWeight:600,letterSpacing:".12em",color:"rgba(255,255,255,0.2)",
           textTransform:"uppercase",fontFamily:"'JetBrains Mono',monospace"}}>Curriculum Night 2026</span>
       </div>
-      <div style={{fontSize:13,color:"rgba(255,255,255,0.3)",fontWeight:400}}>Click any course to explore</div>
+      <div style={{display:"flex",alignItems:"center",gap:10}}>
+        <div style={{fontSize:13,color:"rgba(255,255,255,0.3)",fontWeight:400}}>Click any course to explore</div>
+        {idleSelected&&<div style={{display:"flex",alignItems:"center",gap:5,fontSize:11,color:"rgba(255,255,255,0.2)"}}>
+          <span style={{width:5,height:5,borderRadius:"50%",background:"rgba(255,255,255,0.25)",display:"inline-block",animation:"pulseGlow 1.5s ease-in-out infinite"}}/>
+          auto-preview
+        </div>}
+      </div>
     </div>
 
     {/* SVG lines */}
     <svg style={{position:"absolute",inset:0,width:"100%",height:"100%",pointerEvents:"none",zIndex:1}}>
       {lines.map((l,i)=>{
-        const isActive=selected&&(l.from===selected||l.to===selected);
+        const isActive=effectiveSelected&&(l.from===effectiveSelected||l.to===effectiveSelected);
         const my=(l.y1+l.y2)/2;
-        return <path key={i} d={`M ${l.x1} ${l.y1} C ${l.x1} ${my}, ${l.x2} ${my}, ${l.x2} ${l.y2}`}
-          fill="none" stroke={isActive?COURSES[l.from].color:"rgba(255,255,255,0.08)"}
-          strokeWidth={isActive?3:1.5} strokeDasharray={isActive?"none":"6 6"}
-          style={{transition:"all .35s cubic-bezier(.4,0,.2,1)"}}
-          opacity={isIdle?.4:isActive?.75:.04}/>;
+        return <g key={i} style={{animation:linesReady?`fadeIn .45s ease ${i*90+250}ms both`:undefined,opacity:linesReady?undefined:0}}>
+          <path d={`M ${l.x1} ${l.y1} C ${l.x1} ${my}, ${l.x2} ${my}, ${l.x2} ${l.y2}`}
+            fill="none" stroke={isActive?COURSES[l.from].color:"rgba(255,255,255,0.08)"}
+            strokeWidth={isActive?3:1.5} strokeDasharray={isActive?"none":"6 6"}
+            style={{transition:"all .35s cubic-bezier(.4,0,.2,1)"}}
+            opacity={isIdle?.4:isActive?.75:.04}/>
+        </g>;
       })}
     </svg>
 
@@ -433,23 +464,23 @@ function PathwayView({onDrillDown}){
       </div>
 
       <div style={{display:"flex",justifyContent:"center"}}>
-        <CourseNode course={COURSES.design} isSelected={selected==="design"} isConnected={connectedIds.includes("design")}
-          isIdle={isIdle} onClick={()=>handleClick("design")} nodeRef={el=>nodeRefs.current["design"]=el}/>
+        <CourseNode course={COURSES.design} isSelected={effectiveSelected==="design"} isConnected={connectedIds.includes("design")}
+          isIdle={isIdle} onClick={()=>handleClick("design")} nodeRef={el=>nodeRefs.current["design"]=el} enterDelay={0}/>
       </div>
       <div style={{display:"flex",justifyContent:"center",gap:48}}>
-        {["digmedia","proddesign","csrobotics"].map(id=>
-          <CourseNode key={id} course={COURSES[id]} isSelected={selected===id} isConnected={connectedIds.includes(id)}
-            isIdle={isIdle} onClick={()=>handleClick(id)} nodeRef={el=>nodeRefs.current[id]=el}/>)}
+        {[["digmedia",140],["proddesign",240],["csrobotics",340]].map(([id,delay])=>
+          <CourseNode key={id} course={COURSES[id]} isSelected={effectiveSelected===id} isConnected={connectedIds.includes(id)}
+            isIdle={isIdle} onClick={()=>handleClick(id)} nodeRef={el=>nodeRefs.current[id]=el} enterDelay={delay}/>)}
       </div>
       <div style={{display:"flex",justifyContent:"center",gap:70}}>
-        <CourseNode course={COURSES.ibart} isSelected={selected==="ibart"} isConnected={connectedIds.includes("ibart")}
-          isIdle={isIdle} onClick={()=>handleClick("ibart")} nodeRef={el=>nodeRefs.current["ibart"]=el}/>
-        <CourseNode course={COURSES.ibdt} isSelected={selected==="ibdt"} isConnected={connectedIds.includes("ibdt")}
-          isIdle={isIdle} onClick={()=>handleClick("ibdt")} nodeRef={el=>nodeRefs.current["ibdt"]=el} isIBDT={true}/>
+        <CourseNode course={COURSES.ibart} isSelected={effectiveSelected==="ibart"} isConnected={connectedIds.includes("ibart")}
+          isIdle={isIdle} onClick={()=>handleClick("ibart")} nodeRef={el=>nodeRefs.current["ibart"]=el} enterDelay={500}/>
+        <CourseNode course={COURSES.ibdt} isSelected={effectiveSelected==="ibdt"} isConnected={connectedIds.includes("ibdt")}
+          isIdle={isIdle} onClick={()=>handleClick("ibdt")} nodeRef={el=>nodeRefs.current["ibdt"]=el} isIBDT={true} enterDelay={620}/>
       </div>
     </div>
 
-    {selected&&selected!=="ibdt"&&<DetailPanel course={COURSES[selected]} onClose={()=>setSelected(null)}/>}
+    {selected&&selected!=="ibdt"&&<DetailPanel course={COURSES[selected]} onClose={()=>{setSelected(null);resetIdleTimer();}}/>}
   </div>;
 }
 
