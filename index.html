@@ -17,6 +17,8 @@ button{font-family:inherit;outline:none}
 @keyframes drift2{0%{transform:translate(0,0) scale(1)}30%{transform:translate(-80px,60px) scale(1.1)}60%{transform:translate(60px,-90px) scale(0.95)}100%{transform:translate(0,0) scale(1)}}
 @keyframes drift3{0%{transform:translate(0,0) scale(1)}20%{transform:translate(70px,80px) scale(0.9)}55%{transform:translate(-60px,-50px) scale(1.15)}80%{transform:translate(30px,60px) scale(1.0)}100%{transform:translate(0,0) scale(1)}}
 @keyframes drift4{0%{transform:translate(0,0) scale(1)}40%{transform:translate(-100px,-40px) scale(1.08)}70%{transform:translate(50px,70px) scale(0.93)}100%{transform:translate(0,0) scale(1)}}
+@keyframes rippleOut{0%{transform:translate(-50%,-50%) scale(0);opacity:.8}100%{transform:translate(-50%,-50%) scale(1);opacity:0}}
+@keyframes rippleOutLarge{0%{transform:translate(-50%,-50%) scale(0);opacity:.5}100%{transform:translate(-50%,-50%) scale(1);opacity:0}}
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
@@ -171,6 +173,7 @@ function AssessmentCard({title,subtitle,duration,marks,weight,color,children}){
 function MatrixView({onBack}){
   const [activeField,setActiveField]=useState(null);
   const [idleField,setIdleField]=useState(null);
+  const [cycling,setCycling]=useState(true);
   const [level,setLevel]=useState("sl");
   const idleTimer=useRef(null);const cycleTimer=useRef(null);const cycleIdx=useRef(0);
   const FIELD_IDS=FIELDS.map(f=>f.id);
@@ -188,7 +191,7 @@ function MatrixView({onBack}){
     clearTimeout(idleTimer.current);stopIdle();
     idleTimer.current=setTimeout(startIdle,5000);
   }
-  useEffect(()=>{
+useEffect(()=>{
     idleTimer.current=setTimeout(startIdle,2000);
     return()=>{clearTimeout(idleTimer.current);clearInterval(cycleTimer.current);};
   },[]);
@@ -234,8 +237,17 @@ function MatrixView({onBack}){
         <div style={{display:"flex",alignItems:"center",justifyContent:"center",paddingBottom:4,borderBottom:"1px solid rgba(255,255,255,0.04)",marginBottom:2}}>
           <img src="cas_logo.png" style={{width:100,height:100,filter:"drop-shadow(0 0 10px rgba(220,50,50,0.5)) drop-shadow(0 0 30px rgba(220,50,50,0.2))",animation:"pulseGlow 3s ease-in-out infinite"}} alt="CAS"/>
         </div>
-        <div style={{fontSize:9,fontWeight:600,letterSpacing:".14em",color:"rgba(255,255,255,0.2)",
-          textTransform:"uppercase",fontFamily:"'JetBrains Mono',monospace",padding:"0 2px 2px"}}>Career Fields</div>
+        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"0 2px 2px"}}>
+          <span style={{fontSize:9,fontWeight:600,letterSpacing:".14em",color:"rgba(255,255,255,0.2)",
+            textTransform:"uppercase",fontFamily:"'JetBrains Mono',monospace"}}>Career Fields</span>
+          <button onClick={()=>{
+            if(cycling){clearTimeout(idleTimer.current);clearInterval(cycleTimer.current);setIdleField(null);setActiveField(null);setCycling(false);}
+            else{setActiveField(null);setCycling(true);idleTimer.current=setTimeout(startIdle,1000);}
+          }} title={cycling?"Show all":"Cycle"} style={{background:"none",border:"none",cursor:"pointer",
+            color:"rgba(255,255,255,0.3)",fontSize:14,lineHeight:1,padding:"2px 2px",transition:"color .2s"}}>
+            {cycling?"⏹":"↺"}
+          </button>
+        </div>
         {FIELDS.map(field=>{const isActive=effectiveField===field.id;const ct=TOPICS.filter(t=>t.fields.includes(field.id)).length;
           return <button key={field.id} onClick={()=>{resetIdleTimer();setActiveField(activeField===field.id?null:field.id);}}
             style={{display:"flex",alignItems:"center",gap:9,padding:"8px 10px",borderRadius:8,
@@ -249,9 +261,6 @@ function MatrixView({onBack}){
             <span style={{fontSize:10,fontFamily:"'JetBrains Mono',monospace",
               color:isActive?field.color:"rgba(255,255,255,0.16)",fontWeight:600,transition:"all .25s",flexShrink:0}}>{ct}</span>
           </button>;})}
-        {activeField&&<button onClick={()=>{resetIdleTimer();setActiveField(null);}} style={{marginTop:2,padding:"5px 10px",borderRadius:6,
-          border:"1px solid rgba(255,255,255,0.08)",background:"rgba(255,255,255,0.02)",cursor:"pointer",
-          color:"rgba(255,255,255,0.35)",fontSize:11,fontWeight:500}}>✕ Clear filter</button>}
         <div style={{flex:1}}/>
         <div style={{fontSize:9.5,color:"rgba(255,255,255,0.14)",lineHeight:1.6,
           borderTop:"1px solid rgba(255,255,255,0.04)",paddingTop:8}}>
@@ -336,7 +345,7 @@ function CourseNode({course,isSelected,isConnected,isIdle,onClick,nodeRef,isIBDT
   const lines=course.label.split("\n");
   const isIB=course.level==="ib";
   const isEntry=course.level==="entry";
-  const btn=<button ref={nodeRef} onClick={onClick} style={{
+  const btn=<button ref={nodeRef} onClick={onClick} data-color={course.color} style={{
     background:isSelected?`linear-gradient(145deg,${course.color}25,${course.color}0c)`
       :isConnected?`linear-gradient(145deg,${course.color}12,${course.color}06)`:"rgba(255,255,255,0.02)",
     border:isSelected?`2.5px solid ${course.color}99`:isConnected?`2px solid ${course.color}44`:"1.5px solid rgba(255,255,255,0.08)",
@@ -488,7 +497,7 @@ function PathwayView({onDrillDown}){
       {/* Level labels */}
       <div style={{position:"absolute",left:36,top:"50%",transform:"translateY(-50%)",
         display:"flex",flexDirection:"column",gap:120,alignItems:"flex-start"}}>
-        {[{l:"Entry",s:"Foundation"},{l:"MYP 4–5",s:"Grades 9–10"},{l:"IB DP",s:"Grades 11–12"}].map((x,i)=>
+        {[{l:"Entry",s:"Foundation"},{l:"Specialized",s:"Grades 9–10"},{l:"IB DP",s:"Grades 11–12"}].map((x,i)=>
           <div key={i}><div style={{fontSize:15,fontWeight:700,color:"rgba(255,255,255,0.3)",letterSpacing:".05em"}}>{x.l}</div>
           <div style={{fontSize:11,color:"rgba(255,255,255,0.15)",fontFamily:"'JetBrains Mono',monospace"}}>{x.s}</div></div>)}
       </div>
@@ -517,6 +526,19 @@ function PathwayView({onDrillDown}){
 
 /* ───────── APP ───────── */
 
+function RippleLayer({ripples}){
+  return <div style={{position:"fixed",inset:0,pointerEvents:"none",zIndex:9999}}>
+    {ripples.map(r=>[
+      <div key={r.id+"a"} style={{position:"absolute",left:r.x,top:r.y,width:80,height:80,borderRadius:"50%",
+        border:`2px solid ${r.color}`,boxShadow:`0 0 12px ${r.color}88`,
+        animation:"rippleOut .7s ease-out forwards"}}/>,
+      r.color!=="rgba(255,255,255,0.35)"&&<div key={r.id+"b"} style={{position:"absolute",left:r.x,top:r.y,width:160,height:160,borderRadius:"50%",
+        border:`1.5px solid ${r.color}66`,
+        animation:"rippleOutLarge 1s ease-out forwards"}}/>
+    ])}
+  </div>;
+}
+
 function Orb({color,size,top,left,animation,duration,delay}){
   return <div style={{position:"absolute",top,left,width:size,height:size,borderRadius:"50%",
     background:`radial-gradient(circle,${color} 0%,transparent 70%)`,
@@ -526,8 +548,16 @@ function Orb({color,size,top,left,animation,duration,delay}){
 
 function App(){
   const [view,setView]=useState("pathway");
-  return <div style={{width:"100vw",height:"100vh",background:"#0B0F1A",
+  const [ripples,setRipples]=useState([]);
+  function handleClick(e){
+    const color=e.target.closest("[data-color]")?.dataset.color||"rgba(255,255,255,0.35)";
+    const id=Date.now()+Math.random();
+    setRipples(r=>[...r,{id,x:e.clientX,y:e.clientY,color}]);
+    setTimeout(()=>setRipples(r=>r.filter(rip=>rip.id!==id)),1100);
+  }
+  return <div onClick={handleClick} style={{width:"100vw",height:"100vh",background:"#0B0F1A",
     fontFamily:"'Outfit',sans-serif",overflow:"hidden",position:"relative"}}>
+    <RippleLayer ripples={ripples}/>
     <div style={{position:"absolute",inset:0,overflow:"hidden",pointerEvents:"none",zIndex:0}}>
       <Orb color="rgba(139,92,246,.9)"  size="600px" top="-10%"  left="-5%"   animation="drift1" duration={28} delay={0}/>
       <Orb color="rgba(6,182,212,.9)"   size="550px" top="55%"   left="70%"   animation="drift2" duration={32} delay={-8}/>
