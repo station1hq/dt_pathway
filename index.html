@@ -346,7 +346,7 @@ function CourseNode({course,isSelected,isConnected,isIdle,onClick,nodeRef,isIBDT
     opacity:isIdle?1:(isSelected||isConnected)?1:.12,
     transform:isSelected?"scale(1.06)":"scale(1)",
     display:"flex",flexDirection:"column",alignItems:"center",gap:5,
-    position:"relative",width:300,
+    position:"relative",width:270,
     boxShadow:isSelected?`0 0 40px ${course.color}18, 0 0 80px ${course.color}08`:"none",
   }}>
     {course.grade&&<div style={{fontSize:11,fontFamily:"'JetBrains Mono',monospace",fontWeight:600,
