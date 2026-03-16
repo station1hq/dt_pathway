@@ -13,6 +13,10 @@ button{font-family:inherit;outline:none}
 @keyframes slideIn{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}}
 @keyframes pulseGlow{0%,100%{opacity:.6}50%{opacity:1}}
 @keyframes nodeEnter{from{opacity:0;transform:scale(.88) translateY(18px)}to{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes drift1{0%{transform:translate(0,0) scale(1)}25%{transform:translate(90px,-70px) scale(1.12)}50%{transform:translate(40px,100px) scale(0.92)}75%{transform:translate(-70px,30px) scale(1.08)}100%{transform:translate(0,0) scale(1)}}
+@keyframes drift2{0%{transform:translate(0,0) scale(1)}30%{transform:translate(-80px,60px) scale(1.1)}60%{transform:translate(60px,-90px) scale(0.95)}100%{transform:translate(0,0) scale(1)}}
+@keyframes drift3{0%{transform:translate(0,0) scale(1)}20%{transform:translate(70px,80px) scale(0.9)}55%{transform:translate(-60px,-50px) scale(1.15)}80%{transform:translate(30px,60px) scale(1.0)}100%{transform:translate(0,0) scale(1)}}
+@keyframes drift4{0%{transform:translate(0,0) scale(1)}40%{transform:translate(-100px,-40px) scale(1.08)}70%{transform:translate(50px,70px) scale(0.93)}100%{transform:translate(0,0) scale(1)}}
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
@@ -65,27 +69,27 @@ const TOPICS = [
 ];
 
 const COURSES = {
-  design:{ id:"design",label:"Design",level:"entry",color:"#8B5CF6",
+  design:{ id:"design",label:"Design",level:"entry",color:"#8B5CF6",grade:"Grade 8",
     desc:"The design pathway develops creative problem-solvers who combine artistic vision with technical skill. Students explore how design thinking applies across digital media, physical products, and computational systems.",
     skills:["Design thinking","Visual communication","Creative problem-solving","Iterative prototyping","User empathy"],
     careers:["Product designer","UX/UI designer","Architect","Industrial designer","Creative director","Design engineer"]},
-  digmedia:{ id:"digmedia",label:"Digital &\nMixed Media",level:"myp",color:"#3B82F6",grade:"MYP 4–5 · Grades 9–10",
+  digmedia:{ id:"digmedia",label:"Digital &\nMixed Media",level:"myp",color:"#3B82F6",grade:"Grades 9–10",
     desc:"Students explore digital and traditional media through photography, video, graphic design, animation, and mixed-media art. Emphasis on visual storytelling, digital tools, and developing a personal creative voice.",
     skills:["Adobe Creative Suite","Photography & videography","Graphic design","Animation & motion","Visual storytelling","Mixed-media techniques"],
     careers:["Graphic designer","Film & video editor","Animator","Photographer","Art director","Media producer"]},
-  proddesign:{ id:"proddesign",label:"Product Design &\nEntrepreneurship",level:"myp",color:"#10B981",grade:"MYP 4–5 · Grades 9–10",
+  proddesign:{ id:"proddesign",label:"Product Design &\nEntrepreneurship",level:"myp",color:"#10B981",grade:"Grades 9–10",
     desc:"Students learn to design and build physical products through the MYP design cycle. Hands-on work with materials, prototyping, CAD modelling, and user-centred research prepares students for IB Design Technology.",
     skills:["CAD modelling","Prototyping & fabrication","Material exploration","User-centred research","Design cycle methodology","Technical drawing"],
     careers:["Product designer","Industrial designer","Design engineer","Entrepreneur","Manufacturing engineer","Furniture designer"]},
-  csrobotics:{ id:"csrobotics",label:"Computer Science\n& Robotics",level:"myp",color:"#F59E0B",grade:"MYP 4–5 · Grades 9–10",
+  csrobotics:{ id:"csrobotics",label:"Computer Science\n& Robotics",level:"myp",color:"#F59E0B",grade:"Grades 9–10",
     desc:"Students develop computational thinking through programming, robotics, and electronics. Projects combine hardware and software to solve real-world problems, building a foundation for IB Design Technology and CS.",
     skills:["Programming (Python, JS)","Robotics & electronics","Computational thinking","Algorithmic problem-solving","Microcontrollers & sensors","Data & logic"],
     careers:["Software engineer","Robotics engineer","Data scientist","IoT developer","Game developer","Systems architect"]},
-  ibart:{ id:"ibart",label:"IB Art",level:"ib",color:"#E85D75",grade:"IB DP · Grades 11–12",
+  ibart:{ id:"ibart",label:"IB Art",level:"ib",color:"#E85D75",grade:"Grades 11–12",
     desc:"The IB Visual Arts course encourages students to explore diverse media, techniques, and art forms through studio work, curatorial practice, and critical analysis. Students develop a personal body of work and a comparative study.",
     skills:["Studio practice","Curatorial exhibition","Comparative study","Art criticism & analysis","Portfolio development","Experimental media"],
     careers:["Fine artist","Gallery curator","Art director","Illustrator","Set designer","Art therapist"]},
-  ibdt:{ id:"ibdt",label:"IB Design Technology",level:"ib",color:"#06B6D4",grade:"IB DP · Grades 11–12",
+  ibdt:{ id:"ibdt",label:"Design Technology",level:"ib",color:"#06B6D4",grade:"Grades 11–12",
     desc:"IB Design Technology is an applied science combining design thinking with engineering. Students study materials, systems, sustainability, and user-centred design, culminating in a major design project.",
     skills:["Design process & thinking","Materials & manufacturing","Structural & mechanical systems","Electronics & CAD","Sustainability & LCA","User-centred design research"],
     careers:["Product designer","Design engineer","UX researcher","Architect","Sustainability consultant","Entrepreneur"]},
@@ -93,8 +97,8 @@ const COURSES = {
 
 const CONNECTIONS = [
   {from:"design",to:"digmedia"},{from:"design",to:"proddesign"},{from:"design",to:"csrobotics"},
-  {from:"digmedia",to:"ibart"},{from:"digmedia",to:"ibdt"},
-  {from:"proddesign",to:"ibart"},{from:"proddesign",to:"ibdt"},
+  {from:"digmedia",to:"ibdt"},
+  {from:"proddesign",to:"ibdt"},
   {from:"csrobotics",to:"ibdt"},
 ];
 
@@ -193,7 +197,7 @@ function MatrixView({onBack}){
   const activeCount=effectiveField?TOPICS.filter(t=>t.fields.includes(effectiveField)).length:TOPICS.length;
   const slC="#60A5FA",hlC="#F87171",iaC="#A78BFA",cspC="#34D399";
 
-  return <div style={{width:"100%",height:"100%",display:"flex",flexDirection:"column",overflow:"hidden",animation:"fadeIn .4s ease"}}>
+  return <div style={{width:"100%",height:"100%",display:"flex",flexDirection:"column",overflow:"hidden",animation:"fadeIn .4s ease",position:"relative",zIndex:1}}>
     <div style={{padding:"10px 24px 9px",display:"flex",alignItems:"center",justifyContent:"space-between",
       borderBottom:"1px solid rgba(255,255,255,0.06)",flexShrink:0}}>
       <div style={{display:"flex",alignItems:"center",gap:12}}>
@@ -328,11 +332,11 @@ function MatrixView({onBack}){
 
 /* ───────── PATHWAY COMPONENTS ───────── */
 
-function CourseNode({course,isSelected,isConnected,isIdle,onClick,nodeRef,isIBDT,enterDelay=0}){
+function CourseNode({course,isSelected,isConnected,isIdle,onClick,nodeRef,isIBDT,enterDelay=0,isSecondary=false}){
   const lines=course.label.split("\n");
   const isIB=course.level==="ib";
   const isEntry=course.level==="entry";
-  return <button ref={nodeRef} onClick={onClick} style={{
+  const btn=<button ref={nodeRef} onClick={onClick} style={{
     background:isSelected?`linear-gradient(145deg,${course.color}25,${course.color}0c)`
       :isConnected?`linear-gradient(145deg,${course.color}12,${course.color}06)`:"rgba(255,255,255,0.02)",
     border:isSelected?`2.5px solid ${course.color}99`:isConnected?`2px solid ${course.color}44`:"1.5px solid rgba(255,255,255,0.08)",
@@ -342,7 +346,7 @@ function CourseNode({course,isSelected,isConnected,isIdle,onClick,nodeRef,isIBDT
     opacity:isIdle?1:(isSelected||isConnected)?1:.12,
     transform:isSelected?"scale(1.06)":"scale(1)",
     display:"flex",flexDirection:"column",alignItems:"center",gap:5,
-    position:"relative",minWidth:isEntry?220:240,
+    position:"relative",width:300,
     boxShadow:isSelected?`0 0 40px ${course.color}18, 0 0 80px ${course.color}08`:"none",
   }}>
     {course.grade&&<div style={{fontSize:11,fontFamily:"'JetBrains Mono',monospace",fontWeight:600,
@@ -358,12 +362,9 @@ function CourseNode({course,isSelected,isConnected,isIdle,onClick,nodeRef,isIBDT
     }}>{line}</div>)}
     {isIB&&<div style={{marginTop:4,fontSize:10,fontWeight:700,fontFamily:"'JetBrains Mono',monospace",
       background:`${course.color}15`,color:`${course.color}cc`,padding:"3px 12px",borderRadius:6,letterSpacing:".12em"}}>IB DIPLOMA</div>}
-    {isIBDT&&<div style={{marginTop:5,fontSize:11,fontWeight:600,color:course.color,
-      background:`${course.color}12`,border:`1px solid ${course.color}30`,
-      padding:"4px 14px",borderRadius:8,transition:"all .3s",
-      animation:"pulseGlow 2s ease-in-out infinite",
-    }}>Explore the full syllabus →</div>}
   </button>;
+  if(isSecondary)return <div style={{opacity:0.25,transition:"opacity .35s"}}>{btn}</div>;
+  return btn;
 }
 
 function DetailPanel({course,onClose}){
@@ -413,7 +414,7 @@ function PathwayView({onDrillDown}){
   const containerRef=useRef(null);
   const [lines,setLines]=useState([]);
   const idleTimer=useRef(null);const cycleTimer=useRef(null);const cycleIdx=useRef(0);
-  const CYCLE_IDS=["design","digmedia","proddesign","csrobotics","ibart","ibdt"];
+  const CYCLE_IDS=["design","digmedia","proddesign","csrobotics","ibdt"];
   const effectiveSelected=selected||idleSelected;
   const connectedIds=effectiveSelected?[effectiveSelected,...CONNECTIONS.filter(c=>c.from===effectiveSelected||c.to===effectiveSelected).map(c=>c.from===effectiveSelected?c.to:c.from)]:[];
 
@@ -454,7 +455,7 @@ function PathwayView({onDrillDown}){
   const isIdle=!effectiveSelected;
   function handleClick(id){resetIdleTimer();if(id==="ibdt"){onDrillDown();return;}setSelected(selected===id?null:id);}
 
-  return <div ref={containerRef} style={{width:"100%",height:"100%",display:"flex",flexDirection:"column",overflow:"hidden",position:"relative"}}>
+  return <div ref={containerRef} style={{width:"100%",height:"100%",display:"flex",flexDirection:"column",overflow:"hidden",position:"relative",zIndex:1}}>
     {/* Header */}
     <div style={{padding:"14px 36px 12px",display:"flex",alignItems:"center",justifyContent:"space-between",
       borderBottom:"1px solid rgba(255,255,255,0.06)",flexShrink:0,zIndex:10}}>
@@ -463,13 +464,6 @@ function PathwayView({onDrillDown}){
         <h1 style={{fontSize:28,fontWeight:900,color:"#fff",letterSpacing:"-0.03em"}}>Design Technology Pathway</h1>
         <span style={{fontSize:10,fontWeight:600,letterSpacing:".12em",color:"rgba(255,255,255,0.2)",
           textTransform:"uppercase",fontFamily:"'JetBrains Mono',monospace"}}>Curriculum Night 2026</span>
-      </div>
-      <div style={{display:"flex",alignItems:"center",gap:10}}>
-        <div style={{fontSize:13,color:"rgba(255,255,255,0.3)",fontWeight:400}}>Click any course to explore</div>
-        {idleSelected&&<div style={{display:"flex",alignItems:"center",gap:5,fontSize:11,color:"rgba(255,255,255,0.2)"}}>
-          <span style={{width:5,height:5,borderRadius:"50%",background:"rgba(255,255,255,0.25)",display:"inline-block",animation:"pulseGlow 1.5s ease-in-out infinite"}}/>
-          auto-preview
-        </div>}
       </div>
     </div>
 
@@ -508,11 +502,12 @@ function PathwayView({onDrillDown}){
           <CourseNode key={id} course={COURSES[id]} isSelected={effectiveSelected===id} isConnected={connectedIds.includes(id)}
             isIdle={isIdle} onClick={()=>handleClick(id)} nodeRef={el=>nodeRefs.current[id]=el} enterDelay={delay}/>)}
       </div>
-      <div style={{display:"flex",justifyContent:"center",gap:70}}>
-        <CourseNode course={COURSES.ibart} isSelected={effectiveSelected==="ibart"} isConnected={connectedIds.includes("ibart")}
-          isIdle={isIdle} onClick={()=>handleClick("ibart")} nodeRef={el=>nodeRefs.current["ibart"]=el} enterDelay={500}/>
-        <CourseNode course={COURSES.ibdt} isSelected={effectiveSelected==="ibdt"} isConnected={connectedIds.includes("ibdt")}
+      <div style={{display:"flex",justifyContent:"center",position:"relative",width:"100%"}}>
+<CourseNode course={COURSES.ibdt} isSelected={effectiveSelected==="ibdt"} isConnected={connectedIds.includes("ibdt")}
           isIdle={isIdle} onClick={()=>handleClick("ibdt")} nodeRef={el=>nodeRefs.current["ibdt"]=el} isIBDT={true} enterDelay={620}/>
+        <div style={{position:"absolute",right:36,top:"50%",transform:"translateY(-50%)",animation:"nodeEnter .55s cubic-bezier(.34,1.56,.64,1) 700ms both"}}>
+          <img src="ib_logo.png" style={{width:120,height:120,display:"block",filter:"drop-shadow(0 0 20px rgba(56,189,248,0.8)) drop-shadow(0 0 50px rgba(56,189,248,0.45)) drop-shadow(0 0 90px rgba(56,189,248,0.2))",animation:"pulseGlow 3s ease-in-out infinite"}} alt="IB"/>
+        </div>
       </div>
     </div>
 
@@ -522,11 +517,25 @@ function PathwayView({onDrillDown}){
 
 /* ───────── APP ───────── */
 
+function Orb({color,size,top,left,animation,duration,delay}){
+  return <div style={{position:"absolute",top,left,width:size,height:size,borderRadius:"50%",
+    background:`radial-gradient(circle,${color} 0%,transparent 70%)`,
+    filter:"blur(72px)",opacity:.18,pointerEvents:"none",
+    animation:`${animation} ${duration}s ease-in-out ${delay}s infinite`}}/>;
+}
+
 function App(){
   const [view,setView]=useState("pathway");
   return <div style={{width:"100vw",height:"100vh",background:"#0B0F1A",
-    backgroundImage:"radial-gradient(ellipse at 15% 25%,rgba(139,92,246,.07) 0%,transparent 50%),radial-gradient(ellipse at 85% 75%,rgba(6,182,212,.06) 0%,transparent 50%)",
-    fontFamily:"'Outfit',sans-serif",overflow:"hidden"}}>
+    fontFamily:"'Outfit',sans-serif",overflow:"hidden",position:"relative"}}>
+    <div style={{position:"absolute",inset:0,overflow:"hidden",pointerEvents:"none",zIndex:0}}>
+      <Orb color="rgba(139,92,246,.9)"  size="600px" top="-10%"  left="-5%"   animation="drift1" duration={28} delay={0}/>
+      <Orb color="rgba(6,182,212,.9)"   size="550px" top="55%"   left="70%"   animation="drift2" duration={32} delay={-8}/>
+      <Orb color="rgba(16,185,129,.9)"  size="480px" top="30%"   left="15%"   animation="drift3" duration={36} delay={-4}/>
+      <Orb color="rgba(245,158,11,.9)"  size="420px" top="-15%"  left="65%"   animation="drift4" duration={24} delay={-12}/>
+      <Orb color="rgba(232,93,117,.9)"  size="400px" top="65%"   left="-5%"   animation="drift2" duration={30} delay={-6}/>
+      <Orb color="rgba(59,130,246,.9)"  size="500px" top="20%"   left="45%"   animation="drift1" duration={38} delay={-18}/>
+    </div>
     {view==="pathway"?<PathwayView onDrillDown={()=>setView("matrix")}/>:<MatrixView onBack={()=>setView("pathway")}/>}
   </div>;
 }
