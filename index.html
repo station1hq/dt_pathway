@@ -465,14 +465,43 @@ function PathwayView({onDrillDown}){
   function handleClick(id){resetIdleTimer();if(id==="ibdt"){onDrillDown();return;}setSelected(selected===id?null:id);}
 
   return <div ref={containerRef} style={{width:"100%",height:"100%",display:"flex",flexDirection:"column",overflow:"hidden",position:"relative",zIndex:1}}>
+    <div style={{position:"absolute",inset:0,pointerEvents:"none",zIndex:0,
+      backgroundImage:"radial-gradient(rgba(255,255,255,0.045) 1px,transparent 1px)",backgroundSize:"24px 24px"}}/>
     {/* Header */}
     <div style={{padding:"14px 36px 12px",display:"flex",alignItems:"center",justifyContent:"space-between",
       borderBottom:"1px solid rgba(255,255,255,0.06)",flexShrink:0,zIndex:10}}>
       <div style={{display:"flex",alignItems:"center",gap:14}}>
         <img src="cas_logo.png" style={{width:72,height:72,flexShrink:0,filter:"drop-shadow(0 0 10px rgba(220,50,50,0.5)) drop-shadow(0 0 30px rgba(220,50,50,0.2))",animation:"pulseGlow 3s ease-in-out infinite"}} alt="CAS"/>
         <h1 style={{fontSize:28,fontWeight:900,color:"#fff",letterSpacing:"-0.03em"}}>Design Technology Pathway</h1>
-        <span style={{fontSize:10,fontWeight:600,letterSpacing:".12em",color:"rgba(255,255,255,0.2)",
+      </div>
+      <div style={{display:"flex",alignItems:"center",gap:14}}>
+        <span style={{fontSize:12,fontWeight:600,letterSpacing:".12em",color:"rgba(255,255,255,0.3)",
           textTransform:"uppercase",fontFamily:"'JetBrains Mono',monospace"}}>Curriculum Night 2026</span>
+        <div style={{width:56,height:56,background:"#fff",borderRadius:4,padding:4,flexShrink:0}}>
+          <svg viewBox="0 0 21 21" width="48" height="48" shapeRendering="crispEdges">
+            {/* Top-left finder */}
+            <rect x="0" y="0" width="7" height="7" fill="#000"/><rect x="1" y="1" width="5" height="5" fill="#fff"/><rect x="2" y="2" width="3" height="3" fill="#000"/>
+            {/* Top-right finder */}
+            <rect x="14" y="0" width="7" height="7" fill="#000"/><rect x="15" y="1" width="5" height="5" fill="#fff"/><rect x="16" y="2" width="3" height="3" fill="#000"/>
+            {/* Bottom-left finder */}
+            <rect x="0" y="14" width="7" height="7" fill="#000"/><rect x="1" y="15" width="5" height="5" fill="#fff"/><rect x="2" y="16" width="3" height="3" fill="#000"/>
+            {/* Data modules */}
+            {[[8,0],[10,0],[8,1],[9,2],[11,2],[12,2],[8,3],[10,3],[12,3],[8,4],[9,5],[11,5],[8,6],[10,6],[12,6],
+              [0,8],[2,8],[4,8],[6,8],[8,8],[10,8],[12,8],[14,8],[16,8],[18,8],[20,8],
+              [1,9],[3,9],[8,9],[11,9],[15,9],[19,9],
+              [0,10],[2,10],[5,10],[8,10],[10,10],[13,10],[16,10],[20,10],
+              [1,11],[4,11],[8,11],[9,11],[12,11],[15,11],[18,11],
+              [0,12],[3,12],[6,12],[8,12],[11,12],[14,12],[17,12],[20,12],
+              [9,14],[11,14],[14,14],[16,14],[18,14],[20,14],
+              [10,15],[12,15],[15,15],[17,15],[19,15],
+              [9,16],[11,16],[13,16],[16,16],[18,16],[20,16],
+              [10,17],[14,17],[15,17],[19,17],
+              [9,18],[11,18],[13,18],[16,18],[20,18],
+              [10,19],[12,19],[15,19],[17,19],[19,19],
+              [9,20],[14,20],[16,20],[18,20],[20,20]
+            ].map(([x,y],i)=><rect key={i} x={x} y={y} width="1" height="1" fill="#000"/>)}
+          </svg>
+        </div>
       </div>
     </div>
 
